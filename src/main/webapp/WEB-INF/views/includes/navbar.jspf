@@ -1,0 +1,48 @@
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<nav class="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm">
+    <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="${pageContext.request.contextPath}/inicio">
+            VENTADEPOR
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto gap-3">
+                <li class="nav-item">
+                    <a class="nav-link fw-medium" href="${pageContext.request.contextPath}/inicio">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-medium" href="${pageContext.request.contextPath}/promociones">
+                        <i class="fas fa-tags"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-medium" href="${pageContext.request.contextPath}/productos">Productos</a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link fw-medium" href="${pageContext.request.contextPath}/nosotros">Nosotros</a>
+                </li>
+                
+                <li class="nav-item">
+                    <a class="nav-link fw-medium" href="${pageContext.request.contextPath}/contacto">Contacto</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link position-relative fw-medium" href="${pageContext.request.contextPath}/carrito">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="carrito-count" style="display: none;">
+                            0
+                        </span>
+                    </a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="nav-link btn btn-outline-primary px-3 fw-medium" href="${pageContext.request.contextPath}/login">
+                        <i class="fas fa-user"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,125 @@
+/* Estilos simplificados para el acordeón de pago */
+.contenedor-pago {
+    padding: 1rem;
+    background-color: #f8f9fa;
+}
+
+.envoltorio-pago {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cabecera-pago {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.titulo-pago {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.seccion-acordeon {
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    background-color: white;
+}
+
+.cabecera-acordeon {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    cursor: pointer;
+}
+
+.cabecera-acordeon:hover {
+    background-color: #f1f3f5;
+}
+
+.cabecera-acordeon.deshabilitado {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.contenido-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.icono-paso {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.titulo-paso {
+    font-weight: 600;
+}
+
+.estado-paso {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.contenido-acordeon {
+    padding: 1rem;
+    border-top: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+}
+
+.grupo-formulario {
+    margin-bottom: 1rem;
+}
+
+.etiqueta-formulario {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.entrada-formulario {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.entrada-formulario:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.boton-continuar {
+    margin-top: 1rem;
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.boton-continuar:disabled {
+    background-color: #adb5bd;
+    cursor: not-allowed;
+}
+
+.boton-continuar:not(:disabled):hover {
+    background-color: #0b5ed7;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 640px) {
+    .cabecera-acordeon {
+        padding: 0.75rem;
+    }
+}

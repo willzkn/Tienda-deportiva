@@ -1,0 +1,60 @@
+/* Admin Clientes - Optimized */
+
+.table-container {
+  overflow-x: auto;
+  margin-top: var(--spacing-xl);
+}
+
+.clients-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.clients-table th,
+.clients-table td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.clients-table thead th {
+  background-color: var(--background-color);
+  font-weight: 500;
+  color: var(--primary-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 14px;
+}
+
+.clients-table tbody tr:hover {
+  background-color: var(--hover-color);
+}
+
+.status {
+  padding: 6px 16px;
+  border-radius: 24px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--background-color);
+  text-transform: uppercase;
+  display: inline-block;
+  letter-spacing: 0.5px;
+}
+
+.status-active {
+  background-color: #4caf50;
+}
+
+.status-inactive {
+  background-color: var(--accent-color);
+}
+
+.footer {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  padding: 24px;
+  text-align: center;
+  width: 100%;
+  flex-shrink: 0;
+}

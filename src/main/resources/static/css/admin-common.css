@@ -1,0 +1,141 @@
+/* Admin Common Styles - Shared across all admin pages */
+
+/* Admin Body */
+body {
+  background: var(--background-light);
+  font-family: var(--font-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Admin Container */
+.container {
+  flex: 1;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--spacing-xxl);
+}
+
+/* Admin Panel Base */
+.management-panel,
+.reports-panel {
+  background: var(--white);
+  padding: var(--spacing-xxl);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow);
+  border: 1px solid var(--border-color);
+}
+
+/* Admin Buttons */
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 24px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-add,
+.btn-search,
+.btn-generate-invoice {
+  background: var(--blue);
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.btn-add:hover,
+.btn-search:hover,
+.btn-generate-invoice:hover {
+  background: #0056b3;
+}
+
+.btn-edit {
+  background: var(--black);
+  color: var(--white);
+}
+
+.btn-edit:hover {
+  background: #2a2a2a;
+}
+
+.btn-delete {
+  background: #dc3545;
+  color: var(--white);
+}
+
+.btn-delete:hover {
+  background: #c82333;
+}
+
+/* Admin Tables */
+.products-table,
+.clients-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.products-table th,
+.products-table td,
+.clients-table th,
+.clients-table td {
+  padding: var(--spacing-md);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.products-table thead th,
+.clients-table thead th {
+  background: var(--background-light);
+  font-weight: 600;
+  color: var(--black);
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.products-table tbody tr:hover,
+.clients-table tbody tr:hover {
+  background: var(--background-light);
+}
+
+/* Search Bar */
+.search-bar input {
+  padding: 12px 16px 12px 48px;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  width: 320px;
+  transition: border-color var(--transition-fast);
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+/* KPI Cards */
+.kpi-card {
+  background: var(--white);
+  padding: var(--spacing-xl);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-normal);
+}
+
+.kpi-card:hover {
+  border-color: var(--accent-color);
+  box-shadow: var(--box-shadow-md);
+  transform: translateY(-2px);
+}
+
+.kpi-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--black);
+  margin: var(--spacing-xs) 0;
+}

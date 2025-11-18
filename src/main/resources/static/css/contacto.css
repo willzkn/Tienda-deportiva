@@ -1,0 +1,44 @@
+/* Contacto Page - Optimized */
+
+.contact-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--spacing-xxl);
+}
+
+.contact-title {
+  font-size: 32px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--spacing-xxl);
+  text-align: center;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-xxl);
+}
+
+.form-wrapper,
+.info-wrapper {
+  background: var(--white);
+  padding: var(--spacing-xxl);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+}
+
+.info-wrapper h3 {
+  font-size: 20px;
+  text-transform: uppercase;
+  margin-bottom: var(--spacing-xl);
+}
+
+.info-wrapper p {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+@media (max-width: 768px) {
+  .contact-grid { grid-template-columns: 1fr; }
+}

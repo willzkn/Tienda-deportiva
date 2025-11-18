@@ -1,0 +1,53 @@
+/* Nosotros Page - Optimized */
+.hero {
+  background: var(--white);
+  text-align: center;
+  padding: 120px var(--spacing-xxl);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.hero h1 {
+  font-size: 48px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.hero p {
+  color: var(--text-secondary);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.descripcion {
+  padding: var(--spacing-xxl);
+  text-align: center;
+  background: var(--background-light);
+}
+
+.descripcion p {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.8;
+}
+
+.mision-vision {
+  padding: var(--spacing-xxl);
+  background: var(--white);
+}
+
+.mision-vision .card {
+  max-width: 480px;
+  padding: var(--spacing-xxl);
+}
+
+.mision-vision .card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent-color);
+}
+
+.mision-vision h2 {
+  font-size: 24px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}

@@ -1,0 +1,67 @@
+/* Admin Panel - Optimized */
+.admin-panel {
+  max-width: 1200px;
+  text-align: center;
+  background: var(--white);
+  padding: var(--spacing-xxl);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.admin-panel h2 {
+  margin-bottom: var(--spacing-xxl);
+  font-size: 36px;
+  text-transform: uppercase;
+  color: var(--blue);
+  position: relative;
+  padding-bottom: var(--spacing-lg);
+}
+
+.admin-panel h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: var(--blue);
+  border-radius: 2px;
+}
+
+.panel-menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-xxl);
+  background: var(--white);
+  border: 2px solid var(--border-color);
+  text-decoration: none;
+  color: var(--black);
+  font-weight: 600;
+  text-transform: uppercase;
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-normal);
+}
+
+.menu-item i {
+  font-size: 56px;
+  margin-bottom: var(--spacing-lg);
+  color: var(--blue);
+  transition: color var(--transition-normal);
+}
+
+.menu-item:hover {
+  border-color: var(--blue);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
+}
+
+.menu-item:hover i {
+  color: var(--cyan);
+}
