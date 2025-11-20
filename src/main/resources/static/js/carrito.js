@@ -1,250 +1,326 @@
-/**
- * Script simplificado para el carrito de compras
- */
+document.addEventListener('DOMContentLoaded', initCarritoPage);
 
-// Actualiza el contador del carrito
-function actualizarContadorCarrito() {
-    const carrito = JSON.parse(localStorage.getItem('carrito')) || [];
-    const contador = document.getElementById('carrito-count');
-    
-    if (contador) {
-        contador.textContent = carrito.length;
-        contador.style.display = carrito.length > 0 ? 'inline-block' : 'none';
+function initCarritoPage() {
+    const ctx = window.appContext || '';
+    const ui = {
+        contenedor: document.getElementById('carrito-container'),
+        resumen: document.getElementById('resumen-productos'),
+        btnContinuar: document.getElementById('btn-continuar'),
+        formulario: document.getElementById('formulario-pago')
+    };
+
+    if (!ui.contenedor || !ui.resumen) {
+        return;
+    }
+
+    const state = {
+        carrito: obtenerCarrito(),
+        ctx,
+        ui
+    };
+
+    renderizarTodo(state);
+    registrarEventos(state);
+}
+
+function registrarEventos(state) {
+    const { ui } = state;
+
+    ui.contenedor.addEventListener('click', (event) => manejarClickContenedor(event, state));
+    ui.resumen.addEventListener('click', (event) => manejarClickResumen(event, state));
+
+    ui.btnContinuar?.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        if (!ui.formulario) {
+            return;
+        }
+
+        if (ui.formulario.checkValidity()) {
+            limpiarCarrito(state);
+            window.location.href = `${state.ctx}/productos`;
+        } else {
+            ui.formulario.classList.add('was-validated');
+        }
+    });
+
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'carrito') {
+            state.carrito = obtenerCarrito();
+            renderizarTodo(state);
+        }
+    });
+}
+
+function manejarClickContenedor(evento, state) {
+    const boton = evento.target.closest('button[data-action]');
+    if (!boton) {
+        return;
+    }
+
+    const { action, index } = boton.dataset;
+    const idx = Number.parseInt(index, 10);
+
+    const acciones = {
+        incrementar: () => actualizarCantidad(state, idx, 1),
+        decrementar: () => actualizarCantidad(state, idx, -1),
+        eliminar: () => eliminarProducto(state, idx),
+        vaciar: () => confirmarVaciarCarrito(state)
+    };
+
+    acciones[action]?.();
+}
+
+function manejarClickResumen(evento, state) {
+    const boton = evento.target.closest('button[data-action="eliminar"]');
+    if (!boton) {
+        return;
+    }
+
+    const idx = Number.parseInt(boton.dataset.index, 10);
+    eliminarProducto(state, idx);
+}
+
+function renderizarTodo(state) {
+    const { ui } = state;
+    renderizarCarrito(state);
+    renderizarResumen(state);
+    actualizarContadorCarrito();
+
+    if (!state.carrito.length) {
+        ui.resumen.innerHTML = crearResumenVacio(state.ctx);
     }
 }
 
-// Inicialización
-document.addEventListener("DOMContentLoaded", function () {
-    const carritoContainer = document.getElementById("carrito-container");
-    const resumenProductos = document.getElementById("resumen-productos");
-    const btnContinuar = document.getElementById("btn-continuar");
-    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+function renderizarCarrito(state) {
+    const { carrito, ui } = state;
 
-    // Renderiza el carrito (versión original - ahora oculta)
-    function renderizarCarrito() {
-        if (carrito.length === 0) {
-            carritoContainer.innerHTML = `
-                <div class="text-center py-5">
-                    <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                    <h4>Tu carrito está vacío</h4>
-                    <p class="text-muted">Agrega algunos productos para comenzar</p>
-                    <a href="${contextPath}/productos" class="btn btn-primary">Ver Productos</a>
-                </div>`;
-            
-            // Si el carrito está vacío, también actualizamos el resumen
-            resumenProductos.innerHTML = `
-                <div class="text-center py-3">
-                    <p class="text-muted">No hay productos en el carrito</p>
-                    <a href="${contextPath}/productos" class="btn btn-sm btn-primary">Ver Productos</a>
-                </div>`;
-        } else {
-            let total = 0;
-            let tableHTML = `
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Imagen</th>
-                                <th>Producto</th>
-                                <th>Precio</th>
-                                <th>Cantidad</th>
-                                <th>Subtotal</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
+    if (!carrito.length) {
+        ui.contenedor.innerHTML = crearCarritoVacio(state.ctx);
+        return;
+    }
 
-            carrito.forEach(function (producto, index) {
-                const cantidad = parseInt(producto.cantidad) || 1;
-                const precio = parseFloat(producto.precio) || 0;
-                const subtotal = precio * cantidad;
-                total += subtotal;
+    const total = calcularTotal(carrito);
 
-                const nombre = producto.nombre || 'Producto sin nombre';
-                const imagen = producto.imagen || contextPath + '/images/default-product.jpg';
+    const filas = carrito
+        .map((producto, index) => crearFilaProducto(producto, index, state.ctx))
+        .join('');
 
-                tableHTML += `
+    ui.contenedor.innerHTML = `
+        <div class="table-responsive">
+            <table class="table">
+                <thead class="table-dark">
                     <tr>
-                        <td>
-                            <img src="${imagen}" alt="${nombre}" 
-                                style="width: 50px; height: 50px; object-fit: cover;" 
-                                onerror="this.src='${contextPath}/images/default-product.jpg'">
-                        </td>
-                        <td>${nombre}</td>
-                        <td>S/ ${precio.toFixed(2)}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <button class="btn btn-sm btn-outline-primary" onclick="cambiarCantidad(${index}, -1)">-</button>
-                                <span class="mx-2">${cantidad}</span>
-                                <button class="btn btn-sm btn-outline-primary" onclick="cambiarCantidad(${index}, 1)">+</button>
-                            </div>
-                        </td>
-                        <td>S/ ${subtotal.toFixed(2)}</td>
-                        <td>
-                            <button class="btn btn-sm btn-danger" onclick="eliminarProducto(${index})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>`;
-            });
+                        <th>Imagen</th>
+                        <th>Producto</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>${filas}</tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-4 p-4 bg-light rounded border">
+            <h3 class="mb-0 text-primary">Total: <span class="text-success">${formatearMoneda(total)}</span></h3>
+            <button class="btn btn-outline-warning" data-action="vaciar">
+                <i class="fas fa-trash-alt"></i> Vaciar Carrito
+            </button>
+        </div>
+    `;
+}
 
-            tableHTML += '</tbody>' +
-                '</table>' +
-                '</div>' +
-                '<div class="d-flex justify-content-between align-items-center mt-4 p-4 bg-light rounded border">' +
-                '<h3 class="mb-0 text-primary">Total: <span class="text-success">S/ ' + total.toFixed(2) + '</span></h3>' +
-                '<button class="btn btn-outline-warning" onclick="vaciarCarrito()">' +
-                '<i class="fas fa-trash-alt"></i> Vaciar Carrito' +
-                '</button>' +
-                '</div>';
+function renderizarResumen(state) {
+    const { carrito, ui } = state;
 
-            carritoContainer.innerHTML = tableHTML;
-            
-            // Renderizar el acordeón de productos
-            renderizarAcordeonProductos(total);
-        }
-
-        actualizarContadorCarrito();
+    if (!carrito.length) {
+        return;
     }
-    
-    // Renderiza el acordeón de productos (nuevo)
-    function renderizarAcordeonProductos(total) {
-        if (carrito.length === 0) {
-            resumenProductos.innerHTML = `
-                <div class="text-center py-3">
-                    <p class="text-muted">No hay productos en el carrito</p>
-                    <a href="${contextPath}/productos" class="btn btn-sm btn-primary">Ver Productos</a>
-                </div>`;
-            return;
-        }
-        
-        let acordeonHTML = '';
-        
-        // Crear un elemento de acordeón para cada producto
-        carrito.forEach(function (producto, index) {
-            const cantidad = parseInt(producto.cantidad) || 1;
-            const precio = parseFloat(producto.precio) || 0;
-            const subtotal = precio * cantidad;
-            
-            const nombre = producto.nombre || 'Producto sin nombre';
-            const imagen = producto.imagen || contextPath + '/images/default-product.jpg';
-            
-            acordeonHTML += `
-                <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading${index}">
-                        <button class="accordion-button ${index !== 0 ? 'collapsed' : ''}" type="button" data-bs-toggle="collapse" 
-                            data-bs-target="#collapse${index}" aria-expanded="${index === 0 ? 'true' : 'false'}" 
-                            aria-controls="collapse${index}">
-                            ${nombre}
-                        </button>
-                    </h2>
-                    <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}" 
-                        aria-labelledby="heading${index}" data-bs-parent="#resumen-productos">
-                        <div class="accordion-body">
-                            <div class="d-flex align-items-center">
-                                <img src="${imagen}" alt="${nombre}" 
-                                    class="me-3" style="width: 60px; height: 60px; object-fit: cover;" 
-                                    onerror="this.src='${contextPath}/images/default-product.jpg'">
-                                <div>
-                                    <p class="mb-1">Precio: <strong>S/ ${precio.toFixed(2)}</strong></p>
-                                    <p class="mb-1">Cantidad: <strong>${cantidad}</strong></p>
-                                    <p class="mb-0">Subtotal: <strong>S/ ${subtotal.toFixed(2)}</strong></p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+
+    const items = carrito
+        .map((producto, index) => crearItemResumen(producto, index))
+        .join('');
+
+    const total = calcularTotal(carrito);
+
+    ui.resumen.innerHTML = `
+        <ul class="list-group">
+            ${items}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <strong>Total</strong>
+                <span>${formatearMoneda(total)}</span>
+            </li>
+        </ul>
+    `;
+}
+
+function crearFilaProducto(producto, index, ctx) {
+    const nombre = producto.nombre || 'Producto sin nombre';
+    const cantidad = obtenerCantidad(producto);
+    const precio = obtenerPrecio(producto);
+    const subtotal = cantidad * precio;
+    const imagen = producto.imagen || `${ctx}/images/default-product.png`;
+
+    return `
+        <tr>
+            <td>
+                <img
+                    src="${imagen}"
+                    alt="${nombre}"
+                    style="width: 50px; height: 50px; object-fit: cover;"
+                    onerror="this.src='${ctx}/images/default-product.png'"
+                >
+            </td>
+            <td>${nombre}</td>
+            <td>${formatearMoneda(precio)}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm btn-outline-primary" data-action="decrementar" data-index="${index}">-</button>
+                    <span class="mx-2">${cantidad}</span>
+                    <button class="btn btn-sm btn-outline-primary" data-action="incrementar" data-index="${index}">+</button>
                 </div>
-            `;
-        });
-        
-        // Agregar el total al final
-        acordeonHTML += `
-            <div class="mt-3 p-3 bg-light rounded border">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Total:</h5>
-                    <h5 class="mb-0 text-success">S/ ${total.toFixed(2)}</h5>
-                </div>
+            </td>
+            <td>${formatearMoneda(subtotal)}</td>
+            <td>
+                <button class="btn btn-sm btn-danger" data-action="eliminar" data-index="${index}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `;
+}
+
+function crearItemResumen(producto, index) {
+    const nombre = producto.nombre || 'Producto sin nombre';
+    const cantidad = obtenerCantidad(producto);
+    const precio = obtenerPrecio(producto);
+    const subtotal = cantidad * precio;
+
+    return `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                <div class="fw-bold">${nombre}</div>
+                <small>Cantidad: ${cantidad}</small>
             </div>
-        `;
-        
-        resumenProductos.innerHTML = acordeonHTML;
+            <div class="d-flex align-items-center gap-2">
+                <span>${formatearMoneda(subtotal)}</span>
+                <button type="button" class="btn btn-sm btn-danger" data-action="eliminar" data-index="${index}" aria-label="Eliminar producto">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </li>
+    `;
+}
+
+function crearCarritoVacio(ctx) {
+    return `
+        <div class="text-center py-5">
+            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+            <h4>Tu carrito está vacío</h4>
+            <p class="text-muted">Agrega algunos productos para comenzar</p>
+            <a href="${ctx}/productos" class="btn btn-primary">Ver Productos</a>
+        </div>
+    `;
+}
+
+function crearResumenVacio(ctx) {
+    return `
+        <div class="text-center py-3">
+            <p class="text-muted">No hay productos en el carrito</p>
+            <a href="${ctx}/productos" class="btn btn-sm btn-primary">Ver Productos</a>
+        </div>
+    `;
+}
+
+function actualizarCantidad(state, index, cambio) {
+    if (!Number.isInteger(index) || !state.carrito[index]) {
+        return;
     }
 
-    // Función para cambiar la cantidad de un producto
-    window.cambiarCantidad = function (index, cambio) {
-        console.log('Cambiando cantidad del producto', index, 'en', cambio);
+    const producto = state.carrito[index];
+    const cantidad = obtenerCantidad(producto) + cambio;
 
-        if (carrito[index]) {
-            carrito[index].cantidad = (parseInt(carrito[index].cantidad) || 1) + cambio;
-            if (carrito[index].cantidad <= 0) {
-                carrito.splice(index, 1);
-            }
-            localStorage.setItem("carrito", JSON.stringify(carrito));
-            renderizarCarrito();
-        }
-    };
-
-    // Función para eliminar un producto del carrito
-    window.eliminarProducto = function (index) {
-        console.log('Eliminando producto', index);
-
-        if (confirm('¿Estás seguro de eliminar este producto?')) {
-            carrito.splice(index, 1);
-            localStorage.setItem("carrito", JSON.stringify(carrito));
-            renderizarCarrito();
-        }
-    };
-
-    // Función para vaciar todo el carrito
-    window.vaciarCarrito = function () {
-        console.log('Vaciando carrito');
-
-        if (confirm('¿Estás seguro de vaciar todo el carrito?')) {
-            carrito = [];
-            localStorage.removeItem("carrito");
-            renderizarCarrito();
-        }
-    };
-
-    // Renderizar el carrito al cargar la página
-    renderizarCarrito();
-
-    // Escuchar cambios en el localStorage (para sincronización entre pestañas)
-    window.addEventListener('storage', function (e) {
-        if (e.key === 'carrito') {
-            carrito = JSON.parse(e.newValue) || [];
-            renderizarCarrito();
-        }
-    });
-    
-    // Hacer funcional el botón Continuar
-    if (btnContinuar) {
-        btnContinuar.addEventListener('click', function() {
-            // Validar el formulario
-            const form = document.getElementById('formulario-pago');
-            if (form.checkValidity()) {
-                // Mostrar mensaje de éxito
-                Swal.fire({
-                    title: '¡Compra Exitosa!',
-                    text: 'Tu pedido ha sido procesado correctamente',
-                    icon: 'success',
-                    confirmButtonText: 'Aceptar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Vaciar el carrito
-                        carrito = [];
-                        localStorage.removeItem("carrito");
-                        // Redirigir a la página de productos
-                        window.location.href = contextPath + '/productos';
-                    }
-                });
-            } else {
-                // Mostrar validaciones del formulario
-                form.classList.add('was-validated');
-            }
-        });
+    if (cantidad <= 0) {
+        state.carrito.splice(index, 1);
+    } else {
+        producto.cantidad = cantidad;
     }
-    
-    // Renderizar el carrito al cargar la página
-    renderizarCarrito();
-});
+
+    guardarCarrito(state.carrito);
+    renderizarTodo(state);
+}
+
+function eliminarProducto(state, index) {
+    if (!Number.isInteger(index) || !state.carrito[index]) {
+        return;
+    }
+
+    if (confirm('¿Estás seguro de eliminar este producto?')) {
+        state.carrito.splice(index, 1);
+        guardarCarrito(state.carrito);
+        renderizarTodo(state);
+    }
+}
+
+function confirmarVaciarCarrito(state) {
+    if (confirm('¿Estás seguro de vaciar todo el carrito?')) {
+        limpiarCarrito(state);
+    }
+}
+
+function limpiarCarrito(state) {
+    state.carrito = [];
+    localStorage.removeItem('carrito');
+    renderizarTodo(state);
+}
+
+function obtenerCarrito() {
+    try {
+        return JSON.parse(localStorage.getItem('carrito')) || [];
+    } catch (error) {
+        console.error('No se pudo leer el carrito desde el almacenamiento local', error);
+        return [];
+    }
+}
+
+function guardarCarrito(carrito) {
+    localStorage.setItem('carrito', JSON.stringify(carrito));
+}
+
+function obtenerCantidad(producto) {
+    return Number.parseInt(producto?.cantidad, 10) || 1;
+}
+
+function obtenerPrecio(producto) {
+    return Number.parseFloat(producto?.precio) || 0;
+}
+
+function formatearMoneda(valor) {
+    return `S/ ${valor.toFixed(2)}`;
+}
+
+function calcularTotal(carrito) {
+    return carrito.reduce((acumulado, producto) => {
+        const cantidad = obtenerCantidad(producto);
+        const precio = obtenerPrecio(producto);
+        return acumulado + cantidad * precio;
+    }, 0);
+}
+
+function actualizarContadorCarrito() {
+    const carrito = obtenerCarrito();
+    const contador = document.getElementById('carrito-count');
+
+    if (!contador) {
+        return;
+    }
+
+    if (carrito.length) {
+        contador.textContent = carrito.length;
+        contador.style.display = 'inline-block';
+    } else {
+        contador.textContent = '';
+        contador.style.display = 'none';
+    }
+}

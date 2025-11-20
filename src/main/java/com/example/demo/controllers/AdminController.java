@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.models.Categoria;
 import com.example.demo.models.Producto;
 import com.example.demo.models.Boleta;
 import com.example.demo.models.DetalleBoleta;
@@ -41,10 +42,14 @@ public class AdminController {
         
         // Cargar productos y categorías en memoria UNA SOLA VEZ
         java.util.Map<Integer, Producto> prodById = new java.util.HashMap<>();
-        productoService.listarTodos().forEach(p -> prodById.put(p.getId_producto(), p));
+        for (Producto producto : productoService.listarTodos()) {
+            prodById.put(producto.getId_producto(), producto);
+        }
         
         java.util.Map<Integer, String> catNombreById = new java.util.HashMap<>();
-        productoService.listarCategorias().forEach(c -> catNombreById.put(c.getId_categoria(), c.getNombre_categoria()));
+        for (Categoria categoria : productoService.listarCategorias()) {
+            catNombreById.put(categoria.getId_categoria(), categoria.getNombre_categoria());
+        }
 
         // Acumuladores (usar TreeMap para mantener orden cronológico)
         double ingresos = 0;
@@ -80,9 +85,17 @@ public class AdminController {
         model.addAttribute("ingresosGenerados", String.format("%.2f", ingresos));
 
         // Mayor mes de ventas
-        ventasPorMes.entrySet().stream()
-            .max(java.util.Map.Entry.comparingByValue())
-            .ifPresent(e -> model.addAttribute("mayorMesVentas", e.getKey()));
+        String mayorMesVentas = null;
+        double mayorMonto = Double.NEGATIVE_INFINITY;
+        for (java.util.Map.Entry<String, Double> entry : ventasPorMes.entrySet()) {
+            if (entry.getValue() > mayorMonto) {
+                mayorMonto = entry.getValue();
+                mayorMesVentas = entry.getKey();
+            }
+        }
+        if (mayorMesVentas != null) {
+            model.addAttribute("mayorMesVentas", mayorMesVentas);
+        }
 
         // Meses disponibles
         java.util.List<String> mesesDisponibles = new java.util.ArrayList<>(ventasPorMes.keySet());
@@ -101,7 +114,10 @@ public class AdminController {
         // Calcular promedio de pedidos mensuales
         double promedioPedidos = 0;
         if (!pedidosPorMes.isEmpty()) {
-            int totalPedidos = pedidosPorMes.values().stream().mapToInt(Integer::intValue).sum();
+            int totalPedidos = 0;
+            for (Integer pedidos : pedidosPorMes.values()) {
+                totalPedidos += pedidos;
+            }
             promedioPedidos = (double) totalPedidos / pedidosPorMes.size();
         }
         model.addAttribute("promedioPedidosMensuales", String.format("%.1f", promedioPedidos));
@@ -117,32 +133,41 @@ public class AdminController {
             final java.time.YearMonth finalSelectedMes = selectedMes;
             java.util.Map<String, Integer> unidadesPorProductoMes = new java.util.HashMap<>();
             
-            todasLasBoletas.stream()
-                .filter(b -> b.getFecha_emision() != null && java.time.YearMonth.from(b.getFecha_emision()).equals(finalSelectedMes))
-                .forEach(b -> {
-                    detalleBoletaService.listarPorBoleta(b.getId_boleta()).forEach(d -> {
-                        Producto p = prodById.get(d.getId_producto());
+            for (Boleta boleta : todasLasBoletas) {
+                if (boleta.getFecha_emision() != null && java.time.YearMonth.from(boleta.getFecha_emision()).equals(finalSelectedMes)) {
+                    java.util.List<DetalleBoleta> detalles = detalleBoletaService.listarPorBoleta(boleta.getId_boleta());
+                    for (DetalleBoleta detalle : detalles) {
+                        Producto p = prodById.get(detalle.getId_producto());
                         if (p != null) {
-                            unidadesPorProductoMes.merge(p.getNombre(), d.getCantidad(), Integer::sum);
+                            unidadesPorProductoMes.merge(p.getNombre(), detalle.getCantidad(), Integer::sum);
                         }
-                    });
-                });
+                    }
+                }
+            }
 
-            unidadesPorProductoMes.entrySet().stream()
-                .max(java.util.Map.Entry.comparingByValue())
-                .ifPresent(e -> {
-                    model.addAttribute("mejorProductoMes", e.getKey());
-                    model.addAttribute("cantidadMejorProductoMes", e.getValue());
-                });
+            java.util.Map.Entry<String, Integer> mejorProductoEntry = null;
+            for (java.util.Map.Entry<String, Integer> entry : unidadesPorProductoMes.entrySet()) {
+                if (mejorProductoEntry == null || entry.getValue() > mejorProductoEntry.getValue()) {
+                    mejorProductoEntry = entry;
+                }
+            }
+            if (mejorProductoEntry != null) {
+                model.addAttribute("mejorProductoMes", mejorProductoEntry.getKey());
+                model.addAttribute("cantidadMejorProductoMes", mejorProductoEntry.getValue());
+            }
         }
 
         // Mayor categoría vendida
-        unidadesPorCategoria.entrySet().stream()
-            .max(java.util.Map.Entry.comparingByValue())
-            .ifPresent(e -> {
-                model.addAttribute("mayorCategoriaVendida", e.getKey());
-                model.addAttribute("cantidadMayorCategoria", e.getValue());
-            });
+        java.util.Map.Entry<String, Integer> mayorCategoriaEntry = null;
+        for (java.util.Map.Entry<String, Integer> entry : unidadesPorCategoria.entrySet()) {
+            if (mayorCategoriaEntry == null || entry.getValue() > mayorCategoriaEntry.getValue()) {
+                mayorCategoriaEntry = entry;
+            }
+        }
+        if (mayorCategoriaEntry != null) {
+            model.addAttribute("mayorCategoriaVendida", mayorCategoriaEntry.getKey());
+            model.addAttribute("cantidadMayorCategoria", mayorCategoriaEntry.getValue());
+        }
 
         // Datos para gráficos (solo los necesarios)
         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();

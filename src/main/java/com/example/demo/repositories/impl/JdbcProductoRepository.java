@@ -49,7 +49,11 @@ public class JdbcProductoRepository implements ProductoDAO {
     @Override
     public Optional<Producto> findById(int id) {
         String sql = "SELECT * FROM Productos WHERE id_producto = ?";
-        return jdbcTemplate.query(sql, productoRowMapper, id).stream().findFirst();
+        List<Producto> resultados = jdbcTemplate.query(sql, productoRowMapper, id);
+        if (resultados.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(resultados.get(0));
     }
 
     @Override

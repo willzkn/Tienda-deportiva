@@ -34,7 +34,11 @@ public class JdbcCategoriaRepository implements CategoriaDAO {
     @Override
     public Optional<Categoria> findById(int id) {
         String sql = "SELECT id_categoria, nombre_categoria FROM Categorias WHERE id_categoria = ?";
-        return jdbcTemplate.query(sql, rowMapper, id).stream().findFirst();
+        List<Categoria> resultados = jdbcTemplate.query(sql, rowMapper, id);
+        if (resultados.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(resultados.get(0));
     }
 
     @Override

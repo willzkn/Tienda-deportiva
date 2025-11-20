@@ -43,10 +43,6 @@
   text-decoration: underline;
 }
 
-.btn-clear:hover {
-  color: var(--cyan);
-}
-
 /* Secciones de Filtro */
 .filter-section {
   margin-bottom: var(--spacing-lg);
@@ -78,11 +74,6 @@
   cursor: pointer;
   font-size: 14px;
   color: var(--text-primary);
-  transition: color var(--transition-fast);
-}
-
-.filter-checkbox:hover {
-  color: var(--blue);
 }
 
 .filter-checkbox input[type="checkbox"],
@@ -141,11 +132,6 @@
   font-weight: 600;
   cursor: pointer;
   margin-top: var(--spacing-md);
-  transition: background-color var(--transition-fast);
-}
-
-.btn-apply:hover {
-  background: #0056b3;
 }
 
 /* Contenido de Productos */
@@ -199,15 +185,8 @@
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: var(--spacing-md);
-  transition: all var(--transition-normal);
   display: flex;
   flex-direction: column;
-}
-
-.producto:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--blue);
 }
 
 .producto h3 {
@@ -218,6 +197,7 @@
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 

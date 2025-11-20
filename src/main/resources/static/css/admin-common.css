@@ -35,7 +35,7 @@ body {
   border-radius: 24px;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: none;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -50,28 +50,14 @@ body {
   gap: var(--spacing-xs);
 }
 
-.btn-add:hover,
-.btn-search:hover,
-.btn-generate-invoice:hover {
-  background: #0056b3;
-}
-
 .btn-edit {
   background: var(--black);
   color: var(--white);
 }
 
-.btn-edit:hover {
-  background: #2a2a2a;
-}
-
 .btn-delete {
   background: #dc3545;
   color: var(--white);
-}
-
-.btn-delete:hover {
-  background: #c82333;
 }
 
 /* Admin Tables */
@@ -99,9 +85,9 @@ body {
   font-size: 14px;
 }
 
-.products-table tbody tr:hover,
-.clients-table tbody tr:hover {
-  background: var(--background-light);
+.products-table tbody tr,
+.clients-table tbody tr {
+  background: inherit;
 }
 
 /* Search Bar */
@@ -110,12 +96,7 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 24px;
   width: 320px;
-  transition: border-color var(--transition-fast);
-}
-
-.search-bar input:focus {
-  outline: none;
-  border-color: var(--accent-color);
+  transition: none;
 }
 
 /* KPI Cards */
@@ -124,13 +105,7 @@ body {
   padding: var(--spacing-xl);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-lg);
-  transition: all var(--transition-normal);
-}
-
-.kpi-card:hover {
-  border-color: var(--accent-color);
-  box-shadow: var(--box-shadow-md);
-  transform: translateY(-2px);
+  transition: none;
 }
 
 .kpi-value {

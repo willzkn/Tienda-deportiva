@@ -43,7 +43,6 @@
   border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 15px;
-  transition: border-color var(--transition-fast);
 }
 
 .input-box input:focus {
@@ -62,11 +61,6 @@
   border-radius: 6px;
   border: none;
   cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
-
-.login-box button:hover {
-  background: #0056b3;
 }
 
 .login-footer {
@@ -79,8 +73,4 @@
 .login-footer a {
   color: var(--blue);
   text-decoration: none;
-}
-
-.login-footer a:hover {
-  text-decoration: underline;
 }

@@ -36,7 +36,11 @@ public class JdbcUsuarioAdminRepository implements UsuarioAdminDAO {
     @Override
     public Optional<UsuarioAdmin> findById(int id) {
         String sql = "SELECT id_usuario, correo, clave, rol FROM UsuarioAdmin WHERE id_usuario = ?";
-        return jdbcTemplate.query(sql, rowMapper, id).stream().findFirst();
+        List<UsuarioAdmin> resultados = jdbcTemplate.query(sql, rowMapper, id);
+        if (resultados.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(resultados.get(0));
     }
 
     @Override

@@ -43,17 +43,8 @@
     text-decoration: none;
     font-weight: 600;
     font-size: 1rem;
-    transition: all 0.3s ease;
     border: none;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.cta-button:hover {
-    background: #1a1a1a;
-    color: #ffffff;
-    text-decoration: none;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Animations */
@@ -94,17 +85,10 @@
     border-radius: 16px;
     padding: 0;
     text-align: left;
-    transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
     border: 1px solid #e5e5e5;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.oferta-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    border-color: #d0d0d0;
 }
 
 .oferta-badge {
@@ -179,16 +163,8 @@
     border-radius: 12px;
     padding: 35px;
     text-align: left;
-    transition: all 0.3s ease;
     border: 1px solid #e5e5e5;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-}
-
-.categoria-promo:hover {
-    background: #fafafa;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-    border-color: #d0d0d0;
 }
 
 .categoria-promo h3 {
@@ -276,18 +252,12 @@
 }
 
 .countdown-item {
+    flex: 1;
     background: #ffffff;
+    padding: 20px;
     border-radius: 12px;
-    padding: 25px 30px;
-    text-align: center;
     border: 1px solid #e0e0e0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-}
-
-.countdown-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .countdown-number {
@@ -341,16 +311,10 @@
 
 .newsletter-input {
     flex: 1;
-    padding: 12px 20px;
-    border: 2px solid #ddd;
+    padding: 18px 24px;
     border-radius: 25px;
     font-size: 1rem;
     outline: none;
-    transition: all 0.3s ease;
-}
-
-.newsletter-input:focus {
-    border-color: #007bff;
 }
 
 .newsletter-btn {
@@ -360,7 +324,6 @@
     padding: 12px 25px;
     border-radius: 25px;
     font-weight: 600;
-    cursor: pointer;
     transition: all 0.3s ease;
 }
 

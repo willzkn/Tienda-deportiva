@@ -50,14 +50,8 @@ footer {
 .footer-links a {
     color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
-    transition: all var(--transition-fast);
     font-size: var(--font-size-sm);
     display: inline-block;
-}
-
-.footer-links a:hover {
-    color: var(--white);
-    transform: translateX(4px);
 }
 
 .footer-contact {
@@ -97,14 +91,7 @@ footer {
     justify-content: center;
     color: var(--white);
     text-decoration: none;
-    transition: all var(--transition-fast);
     font-size: var(--font-size-sm);
-}
-
-.social-link:hover {
-    background: var(--white);
-    color: var(--black);
-    transform: translateY(-2px);
 }
 
 .footer-bottom {
@@ -134,11 +121,6 @@ footer {
     color: rgba(255, 255, 255, 0.5);
     text-decoration: none;
     font-size: var(--font-size-xs);
-    transition: color var(--transition-fast);
-}
-
-.footer-bottom-links a:hover {
-    color: var(--white);
 }
 
 /* Newsletter Signup */
@@ -160,13 +142,6 @@ footer {
     color: var(--white);
     border-radius: var(--border-radius-md);
     font-size: var(--font-size-sm);
-    transition: all var(--transition-fast);
-}
-
-.footer-newsletter-input:focus {
-    outline: none;
-    border-color: var(--white);
-    background: rgba(255, 255, 255, 0.05);
 }
 
 .footer-newsletter-input::placeholder {
@@ -182,11 +157,6 @@ footer {
     font-weight: 600;
     font-size: var(--font-size-sm);
     cursor: pointer;
-    transition: all var(--transition-fast);
-}
-
-.footer-newsletter-btn:hover {
-    background: #0056b3;
 }
 
 @media (max-width: 992px) {

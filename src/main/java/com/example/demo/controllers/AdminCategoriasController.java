@@ -6,8 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/admin/categorias")
 public class AdminCategoriasController {
@@ -26,12 +24,12 @@ public class AdminCategoriasController {
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") int id, Model model) {
-        Optional<Categoria> cat = categoriaService.obtenerPorId(id);
-        if (cat.isPresent()) {
-            model.addAttribute("categoria", cat.get());
-            return "admincategoria-editar";
+        Categoria categoria = categoriaService.obtenerPorId(id).orElse(null);
+        if (categoria == null) {
+            return "redirect:/admin/categorias";
         }
-        return "redirect:/admin/categorias";
+        model.addAttribute("categoria", categoria);
+        return "admincategoria-editar";
     }
 
     @GetMapping("/nuevo")

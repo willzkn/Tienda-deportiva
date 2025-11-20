@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class HomeController {
@@ -40,9 +39,13 @@ public class HomeController {
 
         // 1. Filtrar por Categoría si se ha seleccionado una
         if (categoriaId != null) {
-            productos = productos.stream()
-                    .filter(p -> p.getId_categoria() == categoriaId)
-                    .collect(Collectors.toList());
+            List<Producto> filtrados = new java.util.ArrayList<>();
+            for (Producto producto : productos) {
+                if (producto.getId_categoria() == categoriaId) {
+                    filtrados.add(producto);
+                }
+            }
+            productos = filtrados;
         }
 
         // 2. Ordenar la lista de productos

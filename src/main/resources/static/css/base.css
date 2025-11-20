@@ -55,10 +55,10 @@
     --box-shadow-lg: 0 8px 24px var(--shadow-dark);
     --box-shadow-hover: 0 12px 32px var(--shadow-dark);
     
-    /* Transiciones */
-    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Transiciones deshabilitadas */
+    --transition-fast: 0s;
+    --transition-normal: 0s;
+    --transition-slow: 0s;
 }
 
 /* Estilos base */
@@ -96,7 +96,7 @@ body {
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    transition: all var(--transition-normal);
+    transition: none;
     border: none;
     letter-spacing: 0.3px;
 }
@@ -106,18 +106,9 @@ body {
     color: var(--white);
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
-    box-shadow: var(--box-shadow-md);
-}
-
 .btn-secondary {
     background-color: var(--black);
     color: var(--white);
-}
-
-.btn-secondary:hover {
-    background-color: #2a2a2a;
 }
 
 .btn-accent {
@@ -126,37 +117,24 @@ body {
     font-weight: 600;
 }
 
-.btn-accent:hover {
-    background-color: #00b8cc;
-}
-
 /* Cards - Modern Premium Style */
 .card {
     background-color: var(--white);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--box-shadow);
     padding: var(--spacing-lg);
-    transition: all var(--transition-normal);
+    transition: none;
     border: 1px solid var(--border-color);
     overflow: hidden;
-}
-
-.card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--box-shadow-hover);
-    border-color: transparent;
 }
 
 .card-img-top {
     width: 100%;
     height: 280px;
     object-fit: cover;
-    transition: transform var(--transition-slow);
+    transition: none;
 }
 
-.card:hover .card-img-top {
-    transform: scale(1.05);
-}
 
 .card-body {
     padding: var(--spacing-lg);
@@ -377,11 +355,7 @@ h3 { font-size: var(--font-size-lg); }
     color: var(--text-primary);
     text-decoration: none;
     font-weight: 500;
-    transition: color var(--transition-fast);
-}
-
-.nav-link:hover {
-    color: var(--primary-color);
+    transition: none;
 }
 
 /* Grid */

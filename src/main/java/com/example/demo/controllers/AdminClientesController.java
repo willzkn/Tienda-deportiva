@@ -5,8 +5,6 @@ import com.example.demo.services.UsuarioAdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/admin/clientes")
 public class AdminClientesController {
@@ -31,12 +29,12 @@ public class AdminClientesController {
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") int id, Model model) {
-        Optional<UsuarioAdmin> usuario = usuarioAdminService.obtenerPorId(id);
-        if (usuario.isPresent()) {
-            model.addAttribute("usuario", usuario.get());
-            return "admincliente-editar";
+        UsuarioAdmin usuario = usuarioAdminService.obtenerPorId(id).orElse(null);
+        if (usuario == null) {
+            return "redirect:/admin/clientes";
         }
-        return "redirect:/admin/clientes";
+        model.addAttribute("usuario", usuario);
+        return "admincliente-editar";
     }
 
     @PostMapping("/guardar")

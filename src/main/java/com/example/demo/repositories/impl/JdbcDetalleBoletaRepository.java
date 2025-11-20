@@ -40,7 +40,11 @@ public class JdbcDetalleBoletaRepository implements DetalleBoletaDAO {
     public Optional<DetalleBoleta> findById(int id) {
         String sql = "SELECT d.id_detalle_boleta, d.id_boleta, d.id_producto, d.cantidad, d.precio_unitario, p.nombre AS producto_nombre " +
                      "FROM Detalle_Boleta d JOIN Productos p ON d.id_producto = p.id_producto WHERE d.id_detalle_boleta = ?";
-        return jdbcTemplate.query(sql, rowMapper, id).stream().findFirst();
+        List<DetalleBoleta> resultados = jdbcTemplate.query(sql, rowMapper, id);
+        if (resultados.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(resultados.get(0));
     }
 
     @Override

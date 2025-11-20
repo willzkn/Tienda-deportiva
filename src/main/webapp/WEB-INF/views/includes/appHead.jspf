@@ -12,7 +12,6 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/base.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/navbar.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/toast.css">
 
 <!-- Scripts -->
 <script>

@@ -10,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @Controller
 @RequestMapping("/admin/boletas")
 public class AdminBoletasController {
@@ -46,16 +44,12 @@ public class AdminBoletasController {
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable("id") int id, Model model) {
-        Optional<Boleta> boleta = boletaService.obtenerPorId(id);
-        if (boleta.isPresent()) {
-            model.addAttribute("boleta", boleta.get());
-            model.addAttribute("usuarios", usuarioAdminService.listarTodos());
-            // Cargar items y productos para mostrarlos en la vista de edición
-            model.addAttribute("detalles", detalleBoletaService.listarPorBoleta(id));
-            model.addAttribute("productos", productoService.listarTodos());
-            return "adminboleta-editar";
+        Boleta boleta = obtenerBoleta(id, model);
+        if (boleta == null) {
+            return redirigirABoletas();
         }
-        return "redirect:/admin/boletas";
+        cargarListasBoleta(id, model);
+        return "adminboleta-editar";
     }
 
     @PostMapping("/guardar")
@@ -77,32 +71,29 @@ public class AdminBoletasController {
 
     @GetMapping("/{id}")
     public String detalle(@PathVariable("id") int id, Model model) {
-        Optional<Boleta> boleta = boletaService.obtenerPorId(id);
-        if (boleta.isPresent()) {
-            model.addAttribute("boleta", boleta.get());
-            model.addAttribute("detalles", detalleBoletaService.listarPorBoleta(id));
-            model.addAttribute("productos", productoService.listarTodos());
-            // Default empty detalle to support creating a new item
-            model.addAttribute("detalle", new DetalleBoleta());
-            return "adminboleta-detalle";
+        Boleta boleta = obtenerBoleta(id, model);
+        if (boleta == null) {
+            return redirigirABoletas();
         }
-        return "redirect:/admin/boletas";
+        model.addAttribute("detalles", detalleBoletaService.listarPorBoleta(id));
+        model.addAttribute("productos", productoService.listarTodos());
+        model.addAttribute("detalle", new DetalleBoleta());
+        return "adminboleta-detalle";
     }
 
     @GetMapping("/{id}/detalle/editar/{detalleId}")
     public String editarDetalle(@PathVariable("id") int id,
                                 @PathVariable("detalleId") int detalleId,
                                 Model model) {
-        Optional<Boleta> boleta = boletaService.obtenerPorId(id);
-        if (boleta.isPresent()) {
-            model.addAttribute("boleta", boleta.get());
-            model.addAttribute("detalles", detalleBoletaService.listarPorBoleta(id));
-            model.addAttribute("productos", productoService.listarTodos());
-            Optional<DetalleBoleta> detalle = detalleBoletaService.obtenerPorId(detalleId);
-            model.addAttribute("detalle", detalle.orElse(new DetalleBoleta()));
-            return "adminboleta-detalle";
+        Boleta boleta = obtenerBoleta(id, model);
+        if (boleta == null) {
+            return redirigirABoletas();
         }
-        return "redirect:/admin/boletas";
+        model.addAttribute("detalles", detalleBoletaService.listarPorBoleta(id));
+        model.addAttribute("productos", productoService.listarTodos());
+        DetalleBoleta detalle = detalleBoletaService.obtenerPorId(detalleId).orElse(new DetalleBoleta());
+        model.addAttribute("detalle", detalle);
+        return "adminboleta-detalle";
     }
 
     @PostMapping("/{id}/detalle/guardar")
@@ -120,14 +111,32 @@ public class AdminBoletasController {
 
     @GetMapping("/detalle/eliminar/{id}")
     public String eliminarDetalle(@PathVariable("id") int idDetalle) {
-        Optional<DetalleBoleta> d = detalleBoletaService.obtenerPorId(idDetalle);
-        if (d.isPresent()) {
-            int idBoleta = d.get().getId_boleta();
-            detalleBoletaService.eliminar(idDetalle);
-            // Recalcular total de la boleta luego de eliminar detalle
-            boletaService.recalcTotal(idBoleta);
-            return "redirect:/admin/boletas/" + idBoleta;
+        DetalleBoleta detalle = detalleBoletaService.obtenerPorId(idDetalle).orElse(null);
+        if (detalle == null) {
+            return redirigirABoletas();
         }
+        int idBoleta = detalle.getId_boleta();
+        detalleBoletaService.eliminar(idDetalle);
+        // Recalcular total de la boleta luego de eliminar detalle
+        boletaService.recalcTotal(idBoleta);
+        return "redirect:/admin/boletas/" + idBoleta;
+    }
+
+    private Boleta obtenerBoleta(int id, Model model) {
+        Boleta boleta = boletaService.obtenerPorId(id).orElse(null);
+        if (boleta != null) {
+            model.addAttribute("boleta", boleta);
+            model.addAttribute("usuarios", usuarioAdminService.listarTodos());
+        }
+        return boleta;
+    }
+
+    private String redirigirABoletas() {
         return "redirect:/admin/boletas";
+    }
+
+    private void cargarListasBoleta(int id, Model model) {
+        model.addAttribute("detalles", detalleBoletaService.listarPorBoleta(id));
+        model.addAttribute("productos", productoService.listarTodos());
     }
 }

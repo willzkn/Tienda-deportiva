@@ -9,10 +9,7 @@
                 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/navbar.css">
                 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
                 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/productos.css">
-                <link rel="stylesheet" href="${pageContext.request.contextPath}/css/payment-accordion.css" id="payment-css">
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-                <!-- SweetAlert2 -->
-                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         </head>
 
         <body>
@@ -91,7 +88,7 @@
                                     <h5 class="mb-0">Resumen de Compra</h5>
                                 </div>
                                 <div class="card-body">
-                                    <div id="resumen-productos" class="accordion">
+                                    <div id="resumen-productos">
                                         <!-- El contenido del acordeón se generará dinámicamente con JavaScript -->
                                     </div>
                                     <div id="carrito-container" class="d-none">
@@ -109,7 +106,6 @@
                         const contextPath = '${pageContext.request.contextPath}';
                     </script>
                     <script src="${pageContext.request.contextPath}/js/carrito.js"></script>
-                    <script src="${pageContext.request.contextPath}/js/payment-accordion.js"></script>
         </body>
 
         </html>

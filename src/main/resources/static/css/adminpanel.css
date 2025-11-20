@@ -47,21 +47,15 @@
   font-weight: 600;
   text-transform: uppercase;
   border-radius: var(--border-radius-lg);
-  transition: all var(--transition-normal);
+  transition: none;
 }
 
 .menu-item i {
   font-size: 56px;
   margin-bottom: var(--spacing-lg);
   color: var(--blue);
-  transition: color var(--transition-normal);
 }
 
 .menu-item:hover {
   border-color: var(--blue);
-  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
-}
-
-.menu-item:hover i {
-  color: var(--cyan);
 }
