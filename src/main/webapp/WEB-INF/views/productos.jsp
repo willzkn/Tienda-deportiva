@@ -7,8 +7,6 @@
 <head>
     <%@ include file="includes/appHead.jspf" %>
     <title>Nuestros Productos - VENTADEPOR</title>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/navbar.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/footer.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/productos.css">
 </head>
 <body>
@@ -63,7 +61,14 @@
                             <c:forEach items="${productos}" var="p">
             
                                  <div class="producto">
-                                    <img src="${pageContext.request.contextPath}/productos/imagen/${p.id_producto}" alt="${p.nombre}">
+                                    <c:choose>
+                                        <c:when test="${not empty p.imagenBase64}">
+                                            <img src="data:image/jpeg;base64,${p.imagenBase64}" alt="${p.nombre}">
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="${pageContext.request.contextPath}/images/default-product.png" alt="Imagen no disponible" class="producto-imagen-placeholder">
+                                        </c:otherwise>
+                                    </c:choose>
                                     <h3>${p.nombre}</h3>
      
                                      <p class="producto-precio">S/. <fmt:formatNumber value="${p.precio}" type="number" minFractionDigits="2"/></p>

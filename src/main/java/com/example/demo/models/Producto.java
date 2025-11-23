@@ -1,5 +1,7 @@
 package com.example.demo.models;
 
+import java.util.Base64;
+
 public class Producto {
     private int id_producto;
     private String sku;
@@ -23,4 +25,11 @@ public class Producto {
     public void setStock(int stock) { this.stock = stock; }
     public byte[] getImagen() { return imagen; }
     public void setImagen(byte[] imagen) { this.imagen = imagen; }
+
+    public String getImagenBase64() {
+        if (imagen == null || imagen.length == 0) {
+            return null;
+        }
+        return Base64.getEncoder().encodeToString(imagen);
+    }
 }

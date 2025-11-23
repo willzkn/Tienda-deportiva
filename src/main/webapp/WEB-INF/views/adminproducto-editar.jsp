@@ -47,7 +47,16 @@
                 </div>
                 <div class="form-group">
                     <label>Imagen Actual</label><br>
-                    <img src="${pageContext.request.contextPath}/productos/imagen/${producto.id_producto}" alt="Imagen actual" style="max-width: 150px; margin-bottom: 10px;">
+                    <c:choose>
+                        <c:when test="${not empty producto.imagenBase64}">
+                            <img src="data:image/jpeg;base64,${producto.imagenBase64}" alt="Imagen actual" style="max-width: 150px; margin-bottom: 10px;">
+                        </c:when>
+                        <c:otherwise>
+                            <div style="max-width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #666; font-size: 12px; margin-bottom: 10px; border-radius: 6px;">
+                                Sin imagen
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
                     <br>
                     <label for="imagenFile">Cambiar Imagen (opcional)</label>
                     <input type="file" id="imagenFile" name="imagenFile" accept="image/*">

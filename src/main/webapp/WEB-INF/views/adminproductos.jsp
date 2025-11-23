@@ -45,7 +45,16 @@
             <c:forEach var="producto" items="${productos}">
               <tr>
                 <td>
-                  <img src="${pageContext.request.contextPath}/productos/imagen/${producto.id_producto}" alt="${producto.nombre}" style="width: 80px; height: 80px; object-fit: cover;">
+                  <c:choose>
+                    <c:when test="${not empty producto.imagenBase64}">
+                      <img src="data:image/jpeg;base64,${producto.imagenBase64}" alt="${producto.nombre}" style="width: 80px; height: 80px; object-fit: cover;">
+                    </c:when>
+                    <c:otherwise>
+                      <div style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #666; font-size: 12px; border-radius: 6px;">
+                        Sin imagen
+                      </div>
+                    </c:otherwise>
+                  </c:choose>
                 </td>
                 <td>${producto.sku}</td>
                 <td>${producto.nombre}</td>
