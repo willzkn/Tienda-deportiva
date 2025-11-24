@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Servicio para categorías: centraliza operaciones CRUD delegadas al DAO.
+ */
 @Service
 public class CategoriaServiceImpl implements CategoriaService {
 

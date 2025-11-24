@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación del servicio de boletas: delega las operaciones CRUD al repositorio JDBC.
+ */
 @Service
 public class BoletaServiceImpl implements BoletaService {
 

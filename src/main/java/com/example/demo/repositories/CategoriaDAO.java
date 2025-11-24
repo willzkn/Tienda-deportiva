@@ -4,6 +4,9 @@ import com.example.demo.models.Categoria;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Contrato de acceso a datos para categorías.
+ */
 public interface CategoriaDAO {
     List<Categoria> findAll();
     Optional<Categoria> findById(int id);

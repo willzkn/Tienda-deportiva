@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.Optional;
 
+/**
+ * Gestiona el panel administrativo: autenticación simple, reportes y CRUD de productos.
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -35,6 +38,10 @@ public class AdminController {
         return "redirect:/login";
     }
 
+    /**
+     * Construye las métricas del dashboard recorriendo boletas y sus detalles en memoria para
+     * calcular ingresos, pedidos y productos destacados por periodo seleccionado.
+     */
     @GetMapping("/reportes")
     public String verReportes(Model model, @RequestParam(value = "mes", required = false) String mesParam) throws com.fasterxml.jackson.core.JsonProcessingException {
         // Cargar todas las boletas UNA SOLA VEZ

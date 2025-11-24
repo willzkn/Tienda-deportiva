@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Servicio para manejar los detalles de boleta delegando operaciones al DAO correspondiente.
+ */
 @Service
 public class DetalleBoletaServiceImpl implements DetalleBoletaService {
 

@@ -10,6 +10,9 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación JDBC de BoletaDAO utilizando JdbcTemplate y mapeo manual.
+ */
 @Repository
 public class JdbcBoletaRepository implements BoletaDAO {
 

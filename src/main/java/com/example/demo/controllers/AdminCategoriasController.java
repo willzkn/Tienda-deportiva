@@ -6,6 +6,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * CRUD de categorías desde el módulo administrativo.
+ */
 @Controller
 @RequestMapping("/admin/categorias")
 public class AdminCategoriasController {
@@ -16,6 +19,9 @@ public class AdminCategoriasController {
         this.categoriaService = categoriaService;
     }
 
+    /**
+     * Muestra todas las categorías registradas.
+     */
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("categorias", categoriaService.listarTodas());
@@ -38,6 +44,9 @@ public class AdminCategoriasController {
         return "admincategoria-editar";
     }
 
+    /**
+     * Guarda o actualiza la categoría según posea id.
+     */
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Categoria categoria) {
         if (categoria.getId_categoria() == 0) {

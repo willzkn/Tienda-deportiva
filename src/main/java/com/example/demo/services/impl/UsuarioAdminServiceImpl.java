@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Servicio para gestionar usuarios administradores mediante el DAO correspondiente.
+ */
 @Service
 public class UsuarioAdminServiceImpl implements UsuarioAdminService {
 

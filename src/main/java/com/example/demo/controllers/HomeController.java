@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Controlador público que expone las páginas principales del sitio (home, catálogo y secciones informativas).
+ */
 @Controller
 public class HomeController {
 
@@ -29,6 +32,9 @@ public class HomeController {
         return "inicio";
     }
 
+    /**
+     * Lista productos aplicando filtros simples por categoría y ordenamiento en memoria antes de enviarlos a la vista.
+     */
     @GetMapping("/productos")
     public String verPaginaDeProductos(
             @RequestParam(required = false) Integer categoriaId,

@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Servicio intermedio para el CRUD de productos; delega en JDBC y se encarga de cargar/retener la imagen.
+ */
 @Service
 public class ProductoServiceImpl implements ProductoService {
 
@@ -32,6 +35,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public void guardarProducto(Producto producto, MultipartFile imagenFile) {
+        // Si llega un archivo, se transforma a bytes antes de persistir.
         if (imagenFile != null && !imagenFile.isEmpty()) {
             try {
                 producto.setImagen(imagenFile.getBytes());
@@ -44,6 +48,7 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public void actualizarProducto(Producto producto, MultipartFile imagenFile) {
+        // Reemplaza la imagen sólo cuando se adjunta una nueva; caso contrario conserva la existente.
         if (imagenFile != null && !imagenFile.isEmpty()) {
             try {
                 producto.setImagen(imagenFile.getBytes());

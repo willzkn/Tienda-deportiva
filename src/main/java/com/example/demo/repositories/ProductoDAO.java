@@ -5,6 +5,9 @@ import com.example.demo.models.Categoria;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Contrato de acceso a datos para productos y sus categorías asociadas.
+ */
 public interface ProductoDAO {
     List<Producto> findAll();
     Optional<Producto> findById(int id);

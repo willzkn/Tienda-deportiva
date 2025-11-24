@@ -10,6 +10,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controla la administración de boletas: listado, edición y mantenimiento de sus detalles.
+ */
 @Controller
 @RequestMapping("/admin/boletas")
 public class AdminBoletasController {
@@ -29,6 +32,9 @@ public class AdminBoletasController {
         this.usuarioAdminService = usuarioAdminService;
     }
 
+    /**
+     * Carga todas las boletas disponibles para mostrarlas en la vista principal.
+     */
     @GetMapping
     public String listar(Model model) {
         model.addAttribute("boletas", boletaService.listarTodas());
@@ -52,6 +58,9 @@ public class AdminBoletasController {
         return "adminboleta-editar";
     }
 
+    /**
+     * Persiste la boleta, ya sea nueva o actualizada según el id recibido.
+     */
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute Boleta boleta) {
         if (boleta.getId_boleta() == 0) {
@@ -96,6 +105,9 @@ public class AdminBoletasController {
         return "adminboleta-detalle";
     }
 
+    /**
+     * Inserta o actualiza un detalle y luego recalcula el total de la boleta asociada.
+     */
     @PostMapping("/{id}/detalle/guardar")
     public String guardarDetalle(@PathVariable("id") int idBoleta, @ModelAttribute DetalleBoleta detalle) {
         detalle.setId_boleta(idBoleta);

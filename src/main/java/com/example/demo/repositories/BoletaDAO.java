@@ -4,6 +4,9 @@ import com.example.demo.models.Boleta;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Contrato de acceso a datos para boletas.
+ */
 public interface BoletaDAO {
     List<Boleta> findAll();
     Optional<Boleta> findById(int id);

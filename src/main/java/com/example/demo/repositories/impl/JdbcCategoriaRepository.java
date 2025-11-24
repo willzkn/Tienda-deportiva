@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Implementación JDBC de CategoriaDAO con JdbcTemplate.
+ */
 @Repository
 public class JdbcCategoriaRepository implements CategoriaDAO {
 

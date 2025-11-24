@@ -5,6 +5,9 @@ import com.example.demo.services.UsuarioAdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+/**
+ * Administra usuarios/clientes desde la consola de administración.
+ */
 @Controller
 @RequestMapping("/admin/clientes")
 public class AdminClientesController {
@@ -15,6 +18,9 @@ public class AdminClientesController {
         this.usuarioAdminService = usuarioAdminService;
     }
 
+    /**
+     * Lista todos los usuarios administradores registrados.
+     */
     @GetMapping
     public String listarClientes(Model model) {
         model.addAttribute("clientes", usuarioAdminService.listarTodos());
@@ -37,6 +43,9 @@ public class AdminClientesController {
         return "admincliente-editar";
     }
 
+    /**
+     * Crea o actualiza un usuario según si ya tiene identificador.
+     */
     @PostMapping("/guardar")
     public String guardarCliente(@ModelAttribute UsuarioAdmin usuario) {
         if (usuario.getId_usuario() == 0) {
