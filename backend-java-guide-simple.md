@@ -259,4 +259,3 @@ Tu backend es como una **organización**:
 - **Models**: Cajas (guardan información)
 - **Spring**: El gerente que une todo
 
-Cada uno sabe hacer su trabajo y no interfiere en el de los demás. ¡Así se mantiene todo ordenado!
