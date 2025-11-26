@@ -10,44 +10,58 @@ Este documento explica en detalle todo el backend del repositorio VENTADEPOR, in
 ### 1.1 Organización de Paquetes
 ```
 src/main/java/com/example/demo/
-├── TiendaDeportivaApplication.java    (Clase principal)
+├── TiendaDeportivaApplication.java    (Clase principal Spring Boot)
 ├── config/
-│   └── DatabaseConfig.java           (Configuración BD)
+│   └── DatabaseConfig.java           (Configuración personalizada de BD)
 ├── controllers/
-│   ├── AdminController.java          (Panel administrador)
-│   ├── AdminCategoriasController.java (Gestión categorías)
-│   ├── AdminProductosController.java  (Gestión productos)
-│   ├── AdminReportesController.java   (Reportes y métricas)
-│   ├── CartController.java            (Carrito de compras)
-│   ├── ContactoController.java        (Formulario contacto)
-│   ├── HomeController.java            (Página principal)
-│   ├── LoginController.java           (Autenticación)
-│   └── RegisterController.java        (Registro usuarios)
+│   ├── AdminController.java          (Panel administrador y reportes)
+│   ├── AdminBoletasController.java   (Gestión completa de boletas y detalles)
+│   ├── AdminCategoriasController.java (CRUD de categorías)
+│   ├── AdminClientesController.java  (Gestión de clientes/usuarios)
+│   ├── AdminProductosController.java  (CRUD de productos con imágenes)
+│   ├── CartController.java            (Carrito de compras con sesión)
+│   ├── ContactoController.java        (Formulario contacto y envío emails)
+│   ├── HomeController.java            (Página principal y navegación)
+│   ├── LoginController.java           (Autenticación de usuarios)
+│   └── RegisterController.java        (Registro de nuevos usuarios)
 ├── models/
-│   ├── Categoria.java                 (Entidad Categoría)
-│   ├── DetallePedido.java             (Entidad DetallePedido)
-│   ├── Pedido.java                    (Entidad Pedido)
-│   ├── Producto.java                  (Entidad Producto)
-│   └── Usuario.java                   (Entidad Usuario)
+│   ├── Boleta.java                     (Entidad principal de ventas)
+│   ├── DetalleBoleta.java              (Líneas de detalle de boleta)
+│   ├── Categoria.java                 (Categorías de productos)
+│   ├── DetallePedido.java             (Detalles de pedidos)
+│   ├── Pedido.java                    (Pedidos de clientes)
+│   ├── Producto.java                  (Productos con imágenes y stock)
+│   └── Usuario.java                   (Usuarios del sistema)
 ├── repositories/
-│   ├── CategoriaRepository.java       (DAO Categorías)
-│   ├── DetallePedidoRepository.java   (DAO DetallePedidos)
-│   ├── PedidoRepository.java          (DAO Pedidos)
-│   ├── ProductoRepository.java        (DAO Productos)
-│   └── UsuarioRepository.java          (DAO Usuarios)
+│   ├── BoletaDAO.java                 (Acceso a datos de boletas)
+│   ├── DetalleBoletaDAO.java          (Acceso a detalles de boleta)
+│   ├── CategoriaRepository.java       (Acceso a categorías)
+│   ├── DetallePedidoRepository.java   (Acceso a detalles de pedido)
+│   ├── PedidoRepository.java          (Acceso a pedidos)
+│   ├── ProductoRepository.java        (Acceso a productos)
+│   └── UsuarioRepository.java          (Acceso a usuarios)
 ├── services/
-│   ├── AdminService.java              (Servicios admin)
-│   ├── CartService.java               (Lógica carrito)
-│   ├── CategoriaService.java          (Servicios categorías)
-│   ├── EmailService.java              (Envío emails)
-│   ├── PedidoService.java             (Gestión pedidos)
-│   ├── ProductoService.java           (Servicios productos)
-│   ├── ReporteService.java            (Generación reportes)
-│   └── UsuarioService.java            (Gestión usuarios)
+│   ├── AdminService.java              (Servicios administrativos)
+│   ├── BoletaService.java              (Lógica de negocio de boletas)
+│   ├── DetalleBoletaService.java       (Gestión de detalles)
+│   ├── CartService.java               (Lógica del carrito de compras)
+│   ├── CategoriaService.java          (Validaciones de categorías)
+│   ├── EmailService.java              (Envío de correos)
+│   ├── PedidoService.java             (Gestión de pedidos)
+│   ├── ProductoService.java           (Validaciones de productos)
+│   ├── ReporteService.java            (Generación de reportes)
+│   ├── UsuarioAdminService.java        (Gestión de usuarios admin)
+│   └── UsuarioService.java            (Gestión de usuarios regulares)
 └── utils/
-    ├── Carrito.java                   (Utilidad carrito)
-    └── Email.java                     (Modelo email)
+    ├── Carrito.java                   (Clase utilitaria para carrito)
+    └── Email.java                     (Modelo de datos para emails)
 ```
+
+**Principios de Organización:**
+- **Separación de responsabilidades**: Cada paquete tiene un propósito específico
+- **Arquitectura en capas**: Controllers → Services → Repositories → Models
+- **Inyección de dependencias**: Spring maneja las dependencias automáticamente
+- **Configuración externa**: `application.properties` para parámetros de entorno
 
 ---
 
@@ -64,37 +78,104 @@ public class TiendaDeportivaApplication {
 ```
 
 **Función:**
-- Punto de entrada de la aplicación Spring Boot
-- Habilita auto-configuración, component scanning y configuration properties
-- Inicia el servidor web embebido (Tomcat)
+- **Punto de entrada**: Método main que inicia la aplicación
+- **Auto-configuración**: Spring Boot configura automáticamente componentes
+- **Servidor embebido**: Inicia Tomcat en el puerto 8080 por defecto
+- **Component scanning**: Busca automáticamente @Controller, @Service, @Repository, etc.
 
 **Anotaciones Spring Boot:**
 - `@SpringBootApplication` = `@Configuration` + `@EnableAutoConfiguration` + `@ComponentScan`
+- **@Configuration**: Clase de configuración de beans
+- **@EnableAutoConfiguration**: Configura automáticamente basado en dependencias
+- **@ComponentScan**: Escanea componentes en el paquete actual y subpaquetes
+
+**Flujo de inicio:**
+1. Ejecuta método `main()`
+2. Spring Boot crea contexto de aplicación
+3. Escanea componentes en el paquete `com.example.demo`
+4. Configura automáticamente beans (DataSource, JdbcTemplate, etc.)
+5. Inicia servidor web embebido (Tomcat)
+6. La aplicación está lista para recibir peticiones HTTP
 
 ---
 
 ## 3. Capa de Controllers (Presentación)
 
 ### 3.1 AdminController.java
-**Propósito**: Panel principal de administración
+**Propósito**: Panel principal de administración y generación de reportes
 
 ```java
 @Controller
+@RequestMapping("/admin")
 public class AdminController {
     
-    @GetMapping("/admin/panel")
+    @GetMapping("/panel")
     public String verPanel() {
         return "adminpanel";  // Retorna vista adminpanel.jsp
+    }
+    
+    @GetMapping("/reportes")
+    public String verReportes(Model model, 
+                             @RequestParam(value = "mes", required = false) String mesParam) 
+            throws JsonProcessingException {
+        
+        // 1. Cargar todas las boletas UNA SOLA VEZ (optimización)
+        List<Boleta> todasLasBoletas = boletaService.listarTodas();
+        
+        // 2. Cargar productos y categorías en memoria UNA SOLA VEZ
+        Map<Integer, Producto> prodById = new HashMap<>();
+        for (Producto producto : productoService.listarTodos()) {
+            prodById.put(producto.getId_producto(), producto);
+        }
+        
+        Map<Integer, String> catNombreById = new HashMap<>();
+        for (Categoria categoria : productoService.listarCategorias()) {
+            catNombreById.put(categoria.getId_categoria(), categoria.getNombre_categoria());
+        }
+
+        // 3. Acumuladores (usar TreeMap para mantener orden cronológico)
+        double ingresos = 0;
+        Map<String, Double> ventasPorMes = new TreeMap<>();
+        Map<String, Integer> pedidosPorMes = new TreeMap<>();
+        Map<String, Integer> unidadesPorCategoria = new HashMap<>();
+        Map<String, Integer> unidadesPorProducto = new HashMap<>();
+
+        // 4. Procesar todas las boletas en UNA SOLA ITERACIÓN
+        for (Boleta b : todasLasBoletas) {
+            // Procesamiento de datos para reportes...
+        }
+        
+        // 5. Convertir a JSON para JavaScript
+        ObjectMapper mapper = new ObjectMapper();
+        model.addAttribute("ventasPorMesJson", mapper.writeValueAsString(ventasPorMes));
+        model.addAttribute("pedidosPorMesJson", mapper.writeValueAsString(pedidosPorMes));
+        model.addAttribute("unidadesPorCategoriaJson", mapper.writeValueAsString(unidadesPorCategoria));
+        
+        return "adminreporte";
     }
 }
 ```
 
-**Funcionalidades:**
-- Acceso al panel de control administrativo
-- Punto de entrada para todas las funciones de administración
+**Funcionalidades principales:**
+- **Dashboard administrativo**: Punto de entrada para funciones admin
+- **Reportes avanzados**: Métricas de ventas, productos y categorías
+- **Optimización de consultas**: Carga datos en memoria una sola vez
+- **Serialización JSON**: Convierte datos Java a JSON para Chart.js
+- **Filtros dinámicos**: Permite filtrar reportes por mes
+
+**Estrategia de optimización:**
+1. **Evita N+1 queries**: Carga datos masivamente en memoria
+2. **Procesamiento en memoria**: Más rápido que múltiples consultas SQL
+3. **TreeMap**: Mantiene orden cronológico automáticamente
+4. **JSON eficiente**: Serializa solo datos necesarios para frontend
+
+**Integración con frontend:**
+- Los datos JSON se inyectan directamente en JavaScript
+- Chart.js consume los JSON para generar gráficos interactivos
+- Los filtros se manejan por parámetros URL (?mes=2024-01)
 
 ### 3.2 AdminCategoriasController.java
-**Propósito**: CRUD completo de categorías
+**Propósito**: CRUD completo de categorías con validación de negocio
 
 ```java
 @Controller
@@ -148,11 +229,30 @@ public class AdminCategoriasController {
 ```
 
 **Endpoints implementados:**
-- `GET /admin/categorias` - Listar categorías
-- `GET /admin/categorias/nuevo` - Formulario nueva categoría
+- `GET /admin/categorias` - Listar todas las categorías
+- `GET /admin/categorias/nuevo` - Formulario para nueva categoría
 - `POST /admin/categorias/guardar` - Guardar categoría (crear/editar)
 - `GET /admin/categorias/editar/{id}` - Editar categoría específica
 - `GET /admin/categorias/eliminar/{id}` - Eliminar categoría
+
+**Características de implementación:**
+- **Validación automática**: @Valid para validación de campos
+- **Manejo de errores**: BindingResult detecta errores de validación
+- **Mensajes flash**: RedirectAttributes para mensajes entre requests
+- **Optional seguro**: Manejo de IDs que no existen
+- **Redirección POST-Redirect-GET**: Evita envíos duplicados de formulario
+
+**Flujo de validación:**
+1. **@Valid**: Activa validaciones en la entidad (anotaciones)
+2. **BindingResult**: Contiene errores si los hay
+3. **Retorno a formulario**: Si hay errores, vuelve al formulario con datos
+4. **Guardado en service**: Si no hay errores, delega a service layer
+5. **Mensaje de éxito**: Redirige con mensaje flash para usuario
+
+**Integración con frontend:**
+- Las vistas JSP usan `${categorias}` para mostrar lista
+- Formularios usan `<form:form>` con Spring Form Tags
+- Mensajes se muestran con `<c:if test="${not empty success}">`
 
 ### 3.3 AdminProductosController.java
 **Propósito**: Gestión completa de productos
