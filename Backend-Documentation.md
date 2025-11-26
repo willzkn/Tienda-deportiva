@@ -255,7 +255,7 @@ public class AdminCategoriasController {
 - Mensajes se muestran con `<c:if test="${not empty success}">`
 
 ### 3.3 AdminProductosController.java
-**Propósito**: Gestión completa de productos
+**Propósito**: Gestión completa de productos con upload de imágenes y validación de stock
 
 ```java
 @Controller
@@ -264,9 +264,6 @@ public class AdminProductosController {
     
     @Autowired
     private ProductoService productoService;
-    
-    @Autowired
-    private CategoriaService categoriaService;
     
     @GetMapping("")
     public String listar(Model model) {
@@ -277,98 +274,203 @@ public class AdminProductosController {
     @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("producto", new Producto());
-        model.addAttribute("categorias", categoriaService.findAll());
+        model.addAttribute("categorias", productoService.listarCategorias());
         return "adminproducto-editar";
     }
     
     @PostMapping("/guardar")
     public String guardar(@Valid Producto producto, 
-                         BindingResult result, 
+                         BindingResult result,
                          @RequestParam("file") MultipartFile file,
-                         Model model,
                          RedirectAttributes attr) {
+        
+        // Validación de campos del formulario
         if (result.hasErrors()) {
-            model.addAttribute("categorias", categoriaService.findAll());
+            model.addAttribute("categorias", productoService.listarCategorias());
             return "adminproducto-editar";
         }
         
-        // Manejo de imagen
+        // Manejo de upload de imagen
         if (!file.isEmpty()) {
             try {
+                // 1. Convierte archivo a bytes
                 byte[] bytes = file.getBytes();
+                // 2. Define ruta de guardado (carpeta images del proyecto)
                 Path path = Paths.get("src/main/webapp/images/" + file.getOriginalFilename());
+                // 3. Escribe archivo en sistema local
                 Files.write(path, bytes);
+                // 4. Asigna nombre de archivo al producto
                 producto.setImagen(file.getOriginalFilename());
             } catch (IOException e) {
                 e.printStackTrace();
+                // Manejo de error si falla el upload
             }
         }
         
+        // 5. Guarda producto en base de datos
         productoService.save(producto);
+        // 6. Mensaje de éxito para mostrar en siguiente página
         attr.addFlashAttribute("success", "Producto guardado exitosamente");
+        // 7. Redirige a lista de productos
+        return "redirect:/admin/productos";
+    }
+    
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable Integer id, Model model) {
+        Optional<Producto> producto = productoService.findById(id);
+        if (producto.isPresent()) {
+            model.addAttribute("producto", producto.get());
+            model.addAttribute("categorias", productoService.listarCategorias());
+            return "adminproducto-editar";
+        }
+        return "redirect:/admin/productos";
+    }
+    
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable Integer id, RedirectAttributes attr) {
+        productoService.deleteById(id);
+        attr.addFlashAttribute("success", "Producto eliminado exitosamente");
         return "redirect:/admin/productos";
     }
 }
 ```
 
-**Características especiales:**
-- **Upload de imágenes**: Manejo de archivos MultipartFile
-- **Validación**: @Valid para validación automática
-- **Relaciones**: Carga de categorías para select
+**Características especiales implementadas:**
+- **Upload de imágenes**: Manejo completo de archivos MultipartFile
+- **Validación automática**: @Valid para campos obligatorios
+- **Relaciones**: Carga de categorías para selectores
+- **Manejo de errores**: Formulario se mantiene con datos si falla
+- **Mensajes flash**: Feedback al usuario entre requests
+- **Seguridad de archivos**: Guardado en carpeta controlada
 
-### 3.4 AdminReportesController.java
-**Propósito**: Generación de reportes y métricas
+**Flujo completo de creación de producto:**
+1. Usuario accede `/admin/productos/nuevo`
+2. Llena formulario y selecciona imagen
+3. POST a `/admin/productos/guardar`
+4. Controller valida y procesa
+5. Imagen se guarda en `/images/`
+6. Producto se guarda en BD
+7. Usuario ve mensaje de éxito en lista
+
+### 3.4 AdminBoletasController.java
+**Propósito**: Gestión completa de boletas y sus detalles
 
 ```java
 @Controller
-@RequestMapping("/admin/reportes")
-public class AdminReportesController {
+@RequestMapping("/admin/boletas")
+public class AdminBoletasController {
     
-    @Autowired
-    private ReporteService reporteService;
+    private final BoletaService boletaService;
+    private final DetalleBoletaService detalleBoletaService;
+    private final ProductoService productoService;
+    private final UsuarioAdminService usuarioAdminService;
     
-    @GetMapping("")
-    public String verReportes(@RequestParam(value = "mes", required = false) String mes,
-                            Model model) {
-        
-        // Datos para reportes
-        ReporteData data = reporteService.obtenerDatosReporte();
-        
-        // Métricas principales
-        model.addAttribute("ingresosGenerados", data.getIngresosGenerados());
-        model.addAttribute("pedidosMes", data.getPedidosMes(mes));
-        model.addAttribute("mayorCategoriaVendida", data.getMayorCategoriaVendida());
-        model.addAttribute("cantidadMayorCategoria", data.getCantidadMayorCategoria());
-        model.addAttribute("mejorProductoMes", data.getMejorProductoMes(mes));
-        model.addAttribute("cantidadMejorProductoMes", data.getCantidadMejorProductoMes(mes));
-        model.addAttribute("mayorMesVentas", data.getMayorMesVentas());
-        
-        // Datos para gráficos (JSON)
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            model.addAttribute("ventasPorMesJson", mapper.writeValueAsString(data.getVentasPorMes()));
-            model.addAttribute("pedidosPorMesJson", mapper.writeValueAsString(data.getPedidosPorMes()));
-            model.addAttribute("unidadesPorCategoriaJson", mapper.writeValueAsString(data.getUnidadesPorCategoria()));
-        } catch (Exception e) {
-            e.printStackTrace();
+    public AdminBoletasController(BoletaService boletaService,
+                                  DetalleBoletaService detalleBoletaService,
+                                  ProductoService productoService,
+                                  UsuarioAdminService usuarioAdminService) {
+        this.boletaService = boletaService;
+        this.detalleBoletaService = detalleBoletaService;
+        this.productoService = productoService;
+        this.usuarioAdminService = usuarioAdminService;
+    }
+    
+    @GetMapping
+    public String listar(Model model) {
+        model.addAttribute("boletas", boletaService.listarTodas());
+        return "adminboletas";
+    }
+    
+    @GetMapping("/nuevo")
+    public String nuevo(Model model) {
+        model.addAttribute("boleta", new Boleta());
+        model.addAttribute("usuarios", usuarioAdminService.listarTodos());
+        return "adminboleta-editar";
+    }
+    
+    @GetMapping("/editar/{id}")
+    public String editar(@PathVariable("id") int id, Model model) {
+        Boleta boleta = obtenerBoleta(id, model);
+        if (boleta == null) {
+            return redirigirABoletas();
         }
-        
-        // Datos para comparación
-        model.addAttribute("mesesDisponibles", data.getMesesDisponibles());
-        model.addAttribute("selectedMes", mes != null ? mes : data.getMesActual());
-        model.addAttribute("ingresosMes", data.getIngresosMes(mes));
-        model.addAttribute("promedioPedidosMensuales", data.getPromedioPedidosMensuales());
-        
-        return "adminreporte";
+        cargarListasBoleta(id, model);
+        return "adminboleta-editar";
+    }
+    
+    @PostMapping("/guardar")
+    public String guardar(@ModelAttribute Boleta boleta) {
+        if (boleta.getId_boleta() == 0) {
+            boletaService.guardar(boleta);
+        } else {
+            boletaService.actualizar(boleta);
+        }
+        return "redirect:/admin/boletas";
+    }
+    
+    @GetMapping("/eliminar/{id}")
+    public String eliminar(@PathVariable("id") int id) {
+        detalleBoletaService.eliminarPorBoleta(id);
+        boletaService.eliminar(id);
+        return "redirect:/admin/boletas";
+    }
+    
+    @GetMapping("/{id}")
+    public String detalle(@PathVariable("id") int id, Model model) {
+        Boleta boleta = obtenerBoleta(id, model);
+        if (boleta == null) {
+            return redirigirABoletas();
+        }
+        model.addAttribute("detalles", detalleBoletaService.listarPorBoleta(id));
+        model.addAttribute("productos", productoService.listarTodos());
+        model.addAttribute("detalle", new DetalleBoleta());
+        return "adminboleta-detalle";
+    }
+    
+    @PostMapping("/{id}/detalle/guardar")
+    public String guardarDetalle(@PathVariable("id") int idBoleta, 
+                                @ModelAttribute DetalleBoleta detalle) {
+        detalle.setId_boleta(idBoleta);
+        if (detalle.getId_detalle_boleta() == 0) {
+            detalleBoletaService.guardar(detalle);
+        } else {
+            detalleBoletaService.actualizar(detalle);
+        }
+        boletaService.recalcTotal(idBoleta);
+        return "redirect:/admin/boletas/" + idBoleta;
+    }
+    
+    @GetMapping("/detalle/eliminar/{id}")
+    public String eliminarDetalle(@PathVariable("id") int idDetalle) {
+        DetalleBoleta detalle = detalleBoletaService.obtenerPorId(idDetalle).orElse(null);
+        if (detalle == null) {
+            return redirigirABoletas();
+        }
+        int idBoleta = detalle.getId_boleta();
+        detalleBoletaService.eliminar(idDetalle);
+        boletaService.recalcTotal(idBoleta);
+        return "redirect:/admin/boletas/" + idBoleta;
+    }
+    
+    private Boleta obtenerBoleta(int id, Model model) {
+        Boleta boleta = boletaService.obtenerPorId(id).orElse(null);
+        if (boleta != null) {
+            model.addAttribute("boleta", boleta);
+            model.addAttribute("usuarios", usuarioAdminService.listarTodos());
+        }
+        return boleta;
+    }
+    
+    private String redirigirABoletas() {
+        return "redirect:/admin/boletas";
+    }
+    
+    private void cargarListasBoleta(int id, Model model) {
+        model.addAttribute("detalles", detalleBoletaService.listarPorBoleta(id));
+        model.addAttribute("productos", productoService.listarTodos());
     }
 }
 ```
-
-**Funcionalidades:**
-- **Métricas en tiempo real**: Cálculo de KPIs
-- **Serialización JSON**: Para consumo de Chart.js
-- **Filtros dinámicos**: Por mes y período
-- **Comparación temporal**: Entre diferentes meses
 
 ### 3.5 CartController.java
 **Propósito**: Gestión del carrito de compras
@@ -434,17 +536,166 @@ public class CartController {
 }
 ```
 
-**Características:**
-- **Gestión de sesión**: Carrito persistente en HttpSession
-- **Operaciones CRUD**: Agregar, actualizar, eliminar productos
-- **Validaciones**: Stock disponible, cantidades válidas
-- **Feedback al usuario**: Mensajes flash
+### 3.6 LoginController.java
+**Propósito**: Autenticación de usuarios
+
+```java
+@Controller
+@RequestMapping("/login")
+public class LoginController {
+    
+    @Autowired
+    private UsuarioService usuarioService;
+    
+    @GetMapping("")
+    public String mostrarLogin() {
+        return "login";
+    }
+    
+    @PostMapping("")
+    public String procesarLogin(@RequestParam String email,
+                               @RequestParam String password,
+                               HttpSession session,
+                               RedirectAttributes attr) {
+        try {
+            Usuario usuario = usuarioService.autenticar(email, password);
+            session.setAttribute("usuario", usuario);
+            return "redirect:/";
+        } catch (Exception e) {
+            attr.addFlashAttribute("error", "Credenciales incorrectas");
+            return "redirect:/login";
+        }
+    }
+    
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
+}
+```
+
+### 3.7 RegisterController.java
+**Propósito**: Registro de nuevos usuarios
+
+```java
+@Controller
+@RequestMapping("/register")
+public class RegisterController {
+    
+    @Autowired
+    private UsuarioService usuarioService;
+    
+    @GetMapping("")
+    public String mostrarRegistro(Model model) {
+        model.addAttribute("usuario", new Usuario());
+        return "register";
+    }
+    
+    @PostMapping("")
+    public String procesarRegistro(@Valid Usuario usuario,
+                                  BindingResult result,
+                                  RedirectAttributes attr) {
+        if (result.hasErrors()) {
+            return "register";
+        }
+        
+        try {
+            usuarioService.registrar(usuario);
+            attr.addFlashAttribute("success", "Usuario registrado exitosamente");
+            return "redirect:/login";
+        } catch (Exception e) {
+            attr.addFlashAttribute("error", e.getMessage());
+            return "redirect:/register";
+        }
+    }
+}
+```
 
 ---
 
 ## 4. Capa de Models (Entidades)
 
-### 4.1 Categoria.java
+### 4.1 Boleta.java
+```java
+public class Boleta {
+    private int id_boleta;
+    private int id_usuario;
+    private LocalDateTime fecha_emision;
+    private double total;
+    
+    // Display fields (from joins)
+    private String usuario_correo;
+    
+    public int getId_boleta() { return id_boleta; }
+    public void setId_boleta(int id_boleta) { this.id_boleta = id_boleta; }
+
+    public int getId_usuario() { return id_usuario; }
+    public void setId_usuario(int id_usuario) { this.id_usuario = id_usuario; }
+
+    public LocalDateTime getFecha_emision() { return fecha_emision; }
+    public void setFecha_emision(LocalDateTime fecha_emision) { this.fecha_emision = fecha_emision; }
+
+    public double getTotal() { return total; }
+    public void setTotal(double total) { this.total = total; }
+
+    public String getUsuario_correo() { return usuario_correo; }
+    public void setUsuario_correo(String usuario_correo) { this.usuario_correo = usuario_correo; }
+    
+    // Métodos de utilidad
+    public String getFechaFormateada() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return fecha_emision != null ? fecha_emision.format(formatter) : "";
+    }
+    
+    public String getTotalFormateado() {
+        return String.format("S/. %.2f", total);
+    }
+}
+```
+
+### 4.2 DetalleBoleta.java
+```java
+public class DetalleBoleta {
+    private int id_detalle_boleta;
+    private int id_boleta;
+    private int id_producto;
+    private int cantidad;
+    private double precio_unitario;
+    
+    // Display fields
+    private String producto_nombre;
+    
+    public int getId_detalle_boleta() { return id_detalle_boleta; }
+    public void setId_detalle_boleta(int id_detalle_boleta) { this.id_detalle_boleta = id_detalle_boleta; }
+
+    public int getId_boleta() { return id_boleta; }
+    public void setId_boleta(int id_boleta) { this.id_boleta = id_boleta; }
+
+    public int getId_producto() { return id_producto; }
+    public void setId_producto(int id_producto) { this.id_producto = id_producto; }
+
+    public int getCantidad() { return cantidad; }
+    public void setCantidad(int cantidad) { this.cantidad = cantidad; }
+
+    public double getPrecio_unitario() { return precio_unitario; }
+    public void setPrecio_unitario(double precio_unitario) { this.precio_unitario = precio_unitario; }
+
+    public String getProducto_nombre() { return producto_nombre; }
+    public void setProducto_nombre(String producto_nombre) { this.producto_nombre = producto_nombre; }
+    
+    // Métodos de utilidad
+    public double getSubtotal() {
+        return cantidad * precio_unitario;
+    }
+    
+    public String getSubtotalFormateado() {
+        return String.format("S/. %.2f", getSubtotal());
+    }
+}
+```
+
+### 4.3 Categoria.java
 ```java
 public class Categoria {
     private Integer idCategoria;
@@ -504,6 +755,14 @@ public class Producto {
     
     public String getImagenUrl() {
         return imagen != null ? "/images/" + imagen : "/images/default-product.png";
+    }
+    
+    public String getPrecioFormateado() {
+        return String.format("S/. %.2f", precio != null ? precio : 0.0);
+    }
+    
+    public String getStockFormateado() {
+        return stock != null ? stock.toString() : "0";
     }
 }
 ```
