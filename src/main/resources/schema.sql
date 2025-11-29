@@ -7,7 +7,8 @@ DROP TABLE IF EXISTS UsuarioAdmin;
 
 CREATE TABLE Categorias (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_categoria VARCHAR(100) NOT NULL UNIQUE
+    nombre_categoria VARCHAR(100) NOT NULL UNIQUE,
+    activo BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE Productos (
@@ -18,6 +19,7 @@ CREATE TABLE Productos (
     precio DECIMAL(10, 2) NOT NULL,
     stock INT NOT NULL DEFAULT 0,
     imagen BLOB,
+    activo BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (id_categoria) REFERENCES Categorias(id_categoria)
 );
 
@@ -25,7 +27,8 @@ CREATE TABLE UsuarioAdmin (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     correo VARCHAR(255) NOT NULL UNIQUE,
     clave VARCHAR(255) NOT NULL,
-    rol VARCHAR(50) NOT NULL DEFAULT 'Cliente'
+    rol VARCHAR(50) NOT NULL DEFAULT 'Cliente',
+    activo BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE Boletas (
@@ -33,9 +36,9 @@ CREATE TABLE Boletas (
     id_usuario INT NOT NULL,
     fecha_emision TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10, 2) NOT NULL,
+    activo BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (id_usuario) REFERENCES UsuarioAdmin(id_usuario)
 );
-
 
 CREATE TABLE Detalle_Boleta (
     id_detalle_boleta INT AUTO_INCREMENT PRIMARY KEY,

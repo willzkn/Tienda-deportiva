@@ -6,9 +6,16 @@ import java.util.Optional;
 
 public interface BoletaService {
     List<Boleta> listarTodas();
+
     Optional<Boleta> obtenerPorId(int id);
+
     void guardar(Boleta boleta);
+
     void actualizar(Boleta boleta);
-    void eliminar(int id);
+
+    void deleteById(int id);
+
+    void cambiarEstado(int id, boolean activo);
+
     void recalcTotal(int idBoleta);
 }

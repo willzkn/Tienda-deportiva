@@ -9,9 +9,11 @@ import com.example.demo.services.UsuarioAdminService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 /**
- * Controla la administración de boletas: listado, edición y mantenimiento de sus detalles.
+ * Controla la administración de boletas: listado, edición y mantenimiento de
+ * sus detalles.
  */
 @Controller
 @RequestMapping("/admin/boletas")
@@ -23,9 +25,9 @@ public class AdminBoletasController {
     private final UsuarioAdminService usuarioAdminService;
 
     public AdminBoletasController(BoletaService boletaService,
-                                  DetalleBoletaService detalleBoletaService,
-                                  ProductoService productoService,
-                                  UsuarioAdminService usuarioAdminService) {
+            DetalleBoletaService detalleBoletaService,
+            ProductoService productoService,
+            UsuarioAdminService usuarioAdminService) {
         this.boletaService = boletaService;
         this.detalleBoletaService = detalleBoletaService;
         this.productoService = productoService;
@@ -37,7 +39,9 @@ public class AdminBoletasController {
      */
     @GetMapping
     public String listar(Model model) {
-        model.addAttribute("boletas", boletaService.listarTodas());
+        List<Boleta> boletas = boletaService.listarTodas();
+        System.out.println("Listando boletas en admin. Total encontradas: " + boletas.size());
+        model.addAttribute("boletas", boletas);
         return "adminboletas";
     }
 
@@ -71,10 +75,9 @@ public class AdminBoletasController {
         return "redirect:/admin/boletas";
     }
 
-    @GetMapping("/eliminar/{id}")
-    public String eliminar(@PathVariable("id") int id) {
-        detalleBoletaService.eliminarPorBoleta(id);
-        boletaService.eliminar(id);
+    @PostMapping("/cambiar-estado")
+    public String cambiarEstado(@RequestParam("id") int id, @RequestParam("activo") boolean activo) {
+        boletaService.cambiarEstado(id, activo);
         return "redirect:/admin/boletas";
     }
 
@@ -92,8 +95,8 @@ public class AdminBoletasController {
 
     @GetMapping("/{id}/detalle/editar/{detalleId}")
     public String editarDetalle(@PathVariable("id") int id,
-                                @PathVariable("detalleId") int detalleId,
-                                Model model) {
+            @PathVariable("detalleId") int detalleId,
+            Model model) {
         Boleta boleta = obtenerBoleta(id, model);
         if (boleta == null) {
             return redirigirABoletas();
@@ -106,7 +109,8 @@ public class AdminBoletasController {
     }
 
     /**
-     * Inserta o actualiza un detalle y luego recalcula el total de la boleta asociada.
+     * Inserta o actualiza un detalle y luego recalcula el total de la boleta
+     * asociada.
      */
     @PostMapping("/{id}/detalle/guardar")
     public String guardarDetalle(@PathVariable("id") int idBoleta, @ModelAttribute DetalleBoleta detalle) {

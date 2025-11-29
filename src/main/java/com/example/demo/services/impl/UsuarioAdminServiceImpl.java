@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para gestionar usuarios administradores mediante el DAO correspondiente.
+ * Servicio para gestionar usuarios administradores mediante el DAO
+ * correspondiente.
  */
 @Service
 public class UsuarioAdminServiceImpl implements UsuarioAdminService {
@@ -31,6 +32,24 @@ public class UsuarioAdminServiceImpl implements UsuarioAdminService {
     }
 
     @Override
+    public Optional<UsuarioAdmin> autenticar(String correo, String clave) {
+        Optional<UsuarioAdmin> usuarioOpt = usuarioAdminDao.findByCorreo(correo);
+        if (usuarioOpt.isPresent()) {
+            UsuarioAdmin usuario = usuarioOpt.get();
+            // Verificar que la contraseña coincida
+            if (usuario.getClave().equals(clave)) {
+                return Optional.of(usuario);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<UsuarioAdmin> obtenerPorCorreo(String correo) {
+        return usuarioAdminDao.findByCorreo(correo);
+    }
+
+    @Override
     public void guardar(UsuarioAdmin usuario) {
         usuarioAdminDao.save(usuario);
     }
@@ -43,5 +62,10 @@ public class UsuarioAdminServiceImpl implements UsuarioAdminService {
     @Override
     public void eliminar(int id) {
         usuarioAdminDao.deleteById(id);
+    }
+
+    @Override
+    public void cambiarEstado(int id, boolean activo) {
+        usuarioAdminDao.cambiarEstado(id, activo);
     }
 }

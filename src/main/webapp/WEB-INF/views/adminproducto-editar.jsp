@@ -35,21 +35,6 @@
                                 ${cat.nombre_categoria}
                             </option>
                         </c:forEach>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="precio">Precio (S/)</label>
-                    <input type="number" id="precio" name="precio" value="${producto.precio}" step="0.01" required>
-                </div>
-                <div class="form-group">
-                    <label for="stock">Stock</label>
-                    <input type="number" id="stock" name="stock" value="${producto.stock}" required>
-                </div>
-                <div class="form-group">
-                    <label>Imagen Actual</label><br>
-                    <c:choose>
-                        <c:when test="${not empty producto.imagenBase64}">
-                            <img src="data:image/jpeg;base64,${producto.imagenBase64}" alt="Imagen actual" style="max-width: 150px; margin-bottom: 10px;">
                         </c:when>
                         <c:otherwise>
                             <div style="max-width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; color: #666; font-size: 12px; margin-bottom: 10px; border-radius: 6px;">

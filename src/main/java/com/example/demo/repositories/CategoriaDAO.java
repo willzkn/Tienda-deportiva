@@ -9,8 +9,16 @@ import java.util.Optional;
  */
 public interface CategoriaDAO {
     List<Categoria> findAll();
+
+    List<Categoria> findAllActivos();
+
     Optional<Categoria> findById(int id);
+
     void save(Categoria categoria);
+
     void update(Categoria categoria);
+
     void deleteById(int id);
+
+    void cambiarEstado(int id, boolean activo);
 }

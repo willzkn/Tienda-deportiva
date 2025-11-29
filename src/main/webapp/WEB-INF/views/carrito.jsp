@@ -23,64 +23,27 @@
                         <div class="col-md-7">
                             <div class="contenedor-pago">
                                 <h2 class="mb-3">Finalizar Compra</h2>
-                                
-                <form id="formulario-pago" class="border p-3 rounded bg-light needs-validation" novalidate>
-                                    <!-- Datos personales -->
-                                    <div class="seccion-pago mb-3">
-                                        <h5><i class="fas fa-user me-2"></i> Datos Personales</h5>
-                                        <div class="mb-3">
-                                            <label class="form-label">Nombre</label>
-                                            <input type="text" name="nombre" class="form-control" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label class="form-label">Email</label>
-                                            <input type="email" name="email" class="form-control" required>
-                                        </div>
+
+                                <form id="formulario-pago" class="border p-3 rounded bg-light">
+                                    <div class="mb-3">
+                                        <label class="form-label">Usuario</label>
+                                        <input type="text" class="form-control"
+                                            value="${sessionScope.nombreUsuario != null ? sessionScope.nombreUsuario : 'Invitado'}"
+                                            readonly>
+                                        <input type="hidden" name="email" value="${sessionScope.nombreUsuario}">
                                     </div>
-                                    
-                                    <!-- Dirección -->
-                                    <div class="seccion-pago mb-3">
-                                        <h5><i class="fas fa-map-marker-alt me-2"></i> Dirección</h5>
-                                        <div class="mb-3">
-                                            <label class="form-label">Dirección</label>
-                                            <input type="text" name="direccion" class="form-control" required>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Ciudad</label>
-                                                <input type="text" name="ciudad" class="form-control" required>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Código Postal</label>
-                                                <input type="text" name="codigoPostal" class="form-control" required>
-                                            </div>
-                                        </div>
+
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle"></i> Al confirmar, se generará la boleta y nos
+                                        pondremos en contacto contigo.
                                     </div>
-                                    
-                                    <!-- Pago -->
-                                    <div class="seccion-pago">
-                                        <h5><i class="fas fa-credit-card me-2"></i> Información de Pago</h5>
-                                        <div class="mb-3">
-                                            <label class="form-label">Número de Tarjeta</label>
-                                            <input type="text" name="numeroTarjeta" class="form-control" required>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Fecha Expiración</label>
-                                                <input type="text" name="fechaExpiracion" class="form-control" placeholder="MM/AA" required>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">CVV</label>
-                                                <input type="text" name="cvv" class="form-control" required>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <button type="button" id="btn-continuar" class="btn btn-primary w-100 mt-3">Continuar</button>
+
+                                    <button type="button" id="btn-continuar"
+                                        class="btn btn-primary w-100 mt-3">Confirmar Compra</button>
                                 </form>
                             </div>
                         </div>
-                        
+
                         <!-- Resumen de productos (derecha) -->
                         <div class="col-md-5">
                             <div class="card">
@@ -102,8 +65,7 @@
 
                 <%@ include file="includes/footer.jspf" %>
                     <script>
-                        // Definir la variable contextPath para que esté disponible en carrito.js
-                        const contextPath = '${pageContext.request.contextPath}';
+                        window.appContext = '${pageContext.request.contextPath}';
                     </script>
                     <script src="${pageContext.request.contextPath}/js/carrito.js"></script>
         </body>

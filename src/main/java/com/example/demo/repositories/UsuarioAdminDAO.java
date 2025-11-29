@@ -9,8 +9,16 @@ import java.util.Optional;
  */
 public interface UsuarioAdminDAO {
     List<UsuarioAdmin> findAll();
+
     Optional<UsuarioAdmin> findById(int id);
+
+    Optional<UsuarioAdmin> findByCorreo(String correo);
+
     void save(UsuarioAdmin usuario);
+
     void update(UsuarioAdmin usuario);
+
     void deleteById(int id);
+
+    void cambiarEstado(int id, boolean activo);
 }

@@ -60,13 +60,19 @@ public class AdminCategoriasController {
     @GetMapping("/eliminar/{id}")
     public String eliminar(@PathVariable("id") int id, Model model) {
         try {
-            categoriaService.eliminar(id);
+            categoriaService.deleteById(id);
         } catch (Exception e) {
             // Si hay error de integridad referencial, mostrar mensaje
             model.addAttribute("error", "No se puede eliminar la categoría porque tiene productos asociados");
             model.addAttribute("categorias", categoriaService.listarTodas());
             return "admincategorias";
         }
+        return "redirect:/admin/categorias";
+    }
+
+    @PostMapping("/cambiar-estado")
+    public String cambiarEstado(@RequestParam("id") int id, @RequestParam("activo") boolean activo) {
+        categoriaService.cambiarEstado(id, activo);
         return "redirect:/admin/categorias";
     }
 }

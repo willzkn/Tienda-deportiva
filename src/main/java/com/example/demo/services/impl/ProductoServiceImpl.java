@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio intermedio para el CRUD de productos; delega en JDBC y se encarga de cargar/retener la imagen.
+ * Servicio intermedio para el CRUD de productos; delega en JDBC y se encarga de
+ * cargar/retener la imagen.
  */
 @Service
 public class ProductoServiceImpl implements ProductoService {
@@ -26,6 +27,11 @@ public class ProductoServiceImpl implements ProductoService {
     @Override
     public List<Producto> listarTodos() {
         return productoDao.findAll();
+    }
+
+    @Override
+    public List<Producto> listarActivos() {
+        return productoDao.findAllActive();
     }
 
     @Override
@@ -48,7 +54,8 @@ public class ProductoServiceImpl implements ProductoService {
 
     @Override
     public void actualizarProducto(Producto producto, MultipartFile imagenFile) {
-        // Reemplaza la imagen sólo cuando se adjunta una nueva; caso contrario conserva la existente.
+        // Reemplaza la imagen sólo cuando se adjunta una nueva; caso contrario conserva
+        // la existente.
         if (imagenFile != null && !imagenFile.isEmpty()) {
             try {
                 producto.setImagen(imagenFile.getBytes());
@@ -69,9 +76,24 @@ public class ProductoServiceImpl implements ProductoService {
     public void eliminarProducto(int id) {
         productoDao.deleteById(id);
     }
-    
+
+    @Override
+    public void deleteById(int id) {
+        productoDao.deleteById(id);
+    }
+
+    @Override
+    public void cambiarEstado(int id, boolean activo) {
+        productoDao.cambiarEstado(id, activo);
+    }
+
+    @Override
+    public List<Categoria> findAllCategorias() {
+        return productoDao.findAllCategorias();
+    }
+
     @Override
     public List<Categoria> listarCategorias() {
-        return productoDao.findAllCategorias();
+        return findAllCategorias();
     }
 }

@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', initCarritoPage);
 
 function initCarritoPage() {
+    // Usar window.appContext definido en el JSP, o fallback a vacío
     const ctx = window.appContext || '';
     const ui = {
         contenedor: document.getElementById('carrito-container'),
@@ -29,20 +30,13 @@ function registrarEventos(state) {
     ui.contenedor.addEventListener('click', (event) => manejarClickContenedor(event, state));
     ui.resumen.addEventListener('click', (event) => manejarClickResumen(event, state));
 
-    ui.btnContinuar?.addEventListener('click', (event) => {
-        event.preventDefault();
-
-        if (!ui.formulario) {
-            return;
-        }
-
-        if (ui.formulario.checkValidity()) {
-            limpiarCarrito(state);
-            window.location.href = `${state.ctx}/productos`;
-        } else {
-            ui.formulario.classList.add('was-validated');
-        }
-    });
+    if (ui.btnContinuar) {
+        ui.btnContinuar.addEventListener('click', (event) => {
+            event.preventDefault();
+            console.log("Botón confirmar clickeado");
+            procesarCompra(state);
+        });
+    }
 
     window.addEventListener('storage', (event) => {
         if (event.key === 'carrito') {
@@ -50,6 +44,69 @@ function registrarEventos(state) {
             renderizarTodo(state);
         }
     });
+}
+
+async function procesarCompra(state) {
+    const { ui, carrito, ctx } = state;
+
+    if (carrito.length === 0) {
+        alert('El carrito está vacío');
+        return;
+    }
+
+    // Recopilar datos del formulario (solo email)
+    const formData = new FormData(ui.formulario);
+    const datosCliente = Object.fromEntries(formData.entries());
+
+    // Preparar payload
+    const payload = {
+        ...datosCliente,
+        items: carrito.map(p => ({
+            id: p.id,
+            nombre: p.nombre,
+            precio: p.precio,
+            cantidad: p.cantidad
+        }))
+    };
+
+    console.log("Enviando payload:", payload);
+
+    try {
+        // Deshabilitar botón para evitar doble envío
+        if (ui.btnContinuar) {
+            ui.btnContinuar.disabled = true;
+            ui.btnContinuar.textContent = 'Procesando...';
+        }
+
+        const response = await fetch(`${ctx}/carrito/checkout`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        console.log("Respuesta del servidor:", data);
+
+        if (response.ok && data.success) {
+            alert('¡Compra realizada con éxito! Gracias por tu preferencia.');
+            limpiarCarrito(state);
+            window.location.href = `${ctx}/inicio`;
+        } else {
+            throw new Error(data.message || 'Error al procesar la compra');
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Hubo un problema al procesar tu compra: ' + error.message);
+    } finally {
+        // Reactivar botón
+        if (ui.btnContinuar) {
+            ui.btnContinuar.disabled = false;
+            ui.btnContinuar.textContent = 'Confirmar Compra';
+        }
+    }
 }
 
 function manejarClickContenedor(evento, state) {
@@ -277,7 +334,26 @@ function limpiarCarrito(state) {
 
 function obtenerCarrito() {
     try {
-        return JSON.parse(localStorage.getItem('carrito')) || [];
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+        // Validar y limpiar IDs inválidos (timestamps antiguos o no numéricos)
+        const carritoValido = carrito.filter(item => {
+            const id = Number(item.id);
+            // Si el ID es mayor a 2 mil millones (rango int Java), es inválido
+            const valido = Number.isInteger(id) && id < 2147483647 && id > 0;
+            if (!valido) {
+                console.warn("Eliminando item inválido del carrito:", item, "ID parseado:", id);
+            }
+            return valido;
+        });
+
+        if (carrito.length !== carritoValido.length) {
+            console.warn("Se eliminaron items con IDs inválidos del carrito");
+            guardarCarrito(carritoValido);
+            return carritoValido;
+        }
+
+        return carrito;
     } catch (error) {
         console.error('No se pudo leer el carrito desde el almacenamiento local', error);
         return [];

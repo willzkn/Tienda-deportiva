@@ -41,9 +41,12 @@ function obtenerProductoDesdeElemento(productoElemento) {
     const nombre = nombreElemento.textContent.trim();
     const precio = obtenerPrecioNumerico(precioElemento.textContent);
     const imagen = imagenElemento.src;
+    const id = parseInt(productoElemento.dataset.id, 10);
+
+    console.log("Producto agregado - ID capturado:", id, "Elemento:", productoElemento);
 
     return {
-        id: Date.now() + Math.random(),
+        id: id,
         nombre,
         precio,
         imagen,

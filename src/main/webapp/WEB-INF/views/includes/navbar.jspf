@@ -37,11 +37,29 @@
                         </span>
                     </a>
                 </li>
-                <li class="nav-item ms-2">
-                    <a class="nav-link btn btn-outline-primary px-3 fw-medium" href="${pageContext.request.contextPath}/login">
-                        <i class="fas fa-user"></i>
-                    </a>
-                </li>
+                
+                <%-- Mostrar botón según estado de sesión --%>
+                
+                <% if (session.getAttribute("usuarioLogueado") != null) { %>
+                    <%-- Usuario logueado: mostrar correo y botón de cerrar sesión --%>
+                    <li class="nav-item">
+                        <span class="nav-link text-muted">
+                            <i class="fas fa-user"></i> ${sessionScope.nombreUsuario}
+                        </span>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="nav-link btn btn-outline-danger px-3 fw-medium" href="${pageContext.request.contextPath}/admin/logout">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </li>
+                <% } else { %>
+                    <%-- Sin sesión: mostrar botón de login --%>
+                    <li class="nav-item ms-2">
+                        <a class="nav-link btn btn-outline-primary px-3 fw-medium" href="${pageContext.request.contextPath}/login">
+                            <i class="fas fa-user"></i> Iniciar Sesión
+                        </a>
+                    </li>
+                <% } %>
             </ul>
         </div>
     </div>

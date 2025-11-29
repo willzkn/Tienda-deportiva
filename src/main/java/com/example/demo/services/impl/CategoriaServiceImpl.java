@@ -41,7 +41,12 @@ public class CategoriaServiceImpl implements CategoriaService {
     }
 
     @Override
-    public void eliminar(int id) {
+    public void deleteById(int id) {
         categoriaDao.deleteById(id);
+    }
+
+    @Override
+    public void cambiarEstado(int id, boolean activo) {
+        categoriaDao.cambiarEstado(id, activo);
     }
 }

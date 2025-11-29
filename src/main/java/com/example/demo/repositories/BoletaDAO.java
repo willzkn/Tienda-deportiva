@@ -9,9 +9,16 @@ import java.util.Optional;
  */
 public interface BoletaDAO {
     List<Boleta> findAll();
+
     Optional<Boleta> findById(int id);
+
     void save(Boleta boleta);
+
     void update(Boleta boleta);
+
     void deleteById(int id);
+
     void recalcTotal(int idBoleta);
+
+    void cambiarEstado(int id, boolean activo);
 }

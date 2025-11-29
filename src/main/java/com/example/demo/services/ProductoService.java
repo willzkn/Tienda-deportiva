@@ -8,9 +8,22 @@ import java.util.Optional;
 
 public interface ProductoService {
     List<Producto> listarTodos();
+
+    List<Producto> listarActivos();
+
     Optional<Producto> obtenerPorId(int id);
+
     void guardarProducto(Producto producto, MultipartFile imagen);
-    void actualizarProducto(Producto producto, MultipartFile imagen); 
+
+    void actualizarProducto(Producto producto, MultipartFile imagen);
+
     void eliminarProducto(int id);
+
+    void deleteById(int id);
+
+    void cambiarEstado(int id, boolean activo);
+
     List<Categoria> listarCategorias();
+
+    List<Categoria> findAllCategorias();
 }

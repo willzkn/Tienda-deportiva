@@ -170,6 +170,7 @@
   border: 1px solid #e0e0e0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
+  overflow: visible;
 }
 
 .metric-card:hover {
@@ -237,7 +238,8 @@
 
 .metric-chart {
   margin-top: 16px;
-  height: 80px;
+  overflow: visible;
+  position: relative;
 }
 
 .metric-info {
@@ -330,11 +332,12 @@
 }
 
 @media (max-width: 768px) {
+
   .metrics-grid,
   .comparison-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .metric-card.full-width {
     grid-column: 1;
   }
