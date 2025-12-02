@@ -47,7 +47,6 @@
             </div>
 
             <%@ include file="includes/footer.jspf" %>
-                <script src="${pageContext.request.contextPath}/js/login.js"></script>
     </body>
 
     </html>

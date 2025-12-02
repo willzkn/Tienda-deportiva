@@ -24,7 +24,6 @@
                     <li><a href="${pageContext.request.contextPath}/productos">Productos</a></li>
                     <li><a href="${pageContext.request.contextPath}/promociones">Promociones</a></li>
                     <li><a href="${pageContext.request.contextPath}/nosotros">Nosotros</a></li>
-                    <li><a href="${pageContext.request.contextPath}/carrito">Mi Carrito</a></li>
                 </ul>
             </div>
             <div class="footer-section">

@@ -40,7 +40,7 @@
                 <div class="metric-info">
                   <h3><i class="fa-solid fa-shopping-cart"></i> Pedidos Mensuales</h3>
                   <p class="metric-value">${pedidosMes != null ? pedidosMes : 0}</p>
-                  <p class="metric-subtitle">Mes: ${selectedMes} | Promedio:
+                  <p class="metric-subtitle">Mes: ${selectedMes != null ? selectedMes : 'Sin datos'} | Promedio:
                     ${promedioPedidosMensuales} pedidos/mes</p>
                 </div>
                 <div class="metric-chart">
@@ -69,9 +69,9 @@
 
         <script>
           // Datos desde el servidor
-          const ventasPorMes = ${ ventasPorMesJson };
-          const pedidosPorMes = ${ pedidosPorMesJson };
-          const topClientes = ${ topClientesJson != null ? topClientesJson : '{}' };
+          const ventasPorMes = JSON.parse('${ventasPorMesJson}');
+          const pedidosPorMes = JSON.parse('${pedidosPorMesJson}');
+          const topClientes = JSON.parse('${topClientesJson}');
 
           // Debug: Ver qué datos llegan
           console.log("Top Clientes recibidos:", topClientes);

@@ -18,10 +18,11 @@
             <section class="management-panel">
               <div class="panel-header">
                 <h2>Stock de Productos</h2>
-                <button class="btn btn-add" id="addProductBtn">
+                <a class="btn btn-add" id="addProductBtn"
+                  href="${pageContext.request.contextPath}/admin/productos/nuevo">
                   <i class="fa-solid fa-plus"></i>
                   Agregar Nuevo Producto
-                </button>
+                </a>
               </div>
 
               <c:if test="${not empty error}">
@@ -93,9 +94,7 @@
                               <i class="fa-solid fa-pencil"></i> Editar
                             </a>
                             <a href="${pageContext.request.contextPath}/admin/productos/eliminar/${producto.id_producto}"
-                              class="btn btn-delete"
-                              onclick="return confirm('¿Estás seguro de eliminar este producto?');"
-                              title="Eliminar Producto">
+                              class="btn btn-delete" title="Eliminar Producto">
                               <i class="fa-solid fa-trash-can"></i> Eliminar
                             </a>
                           </div>
@@ -136,29 +135,7 @@
             </div>
           </div>
 
-          <script>
-            document.addEventListener('DOMContentLoaded', function () {
-              const modal = document.getElementById('addProductModal');
-              const addBtn = document.getElementById('addProductBtn');
-              const closeBtn = document.querySelector('.close-button');
-              const cancelBtn = document.querySelector('.btn-cancel');
-
-              if (addBtn) {
-                addBtn.onclick = () => modal.style.display = 'flex';
-              }
-              if (closeBtn) {
-                closeBtn.onclick = () => modal.style.display = 'none';
-              }
-              if (cancelBtn) {
-                cancelBtn.onclick = () => modal.style.display = 'none';
-              }
-              window.onclick = (event) => {
-                if (event.target == modal) {
-                  modal.style.display = 'none';
-                }
-              }
-            });
-          </script>
+          <script src="${pageContext.request.contextPath}/js/adminproductos.js"></script>
       </body>
 
       </html>

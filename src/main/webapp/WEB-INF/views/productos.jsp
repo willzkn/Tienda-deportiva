@@ -90,8 +90,6 @@
                                                             <fmt:formatNumber value="${p.precio}" type="number"
                                                                 minFractionDigits="2" />
                                                         </p>
-                                                        <button class="agregar btn btn-primary">Agregar al
-                                                            carrito</button>
                                                     </div>
 
                                                 </c:forEach>
