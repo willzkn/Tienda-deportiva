@@ -98,17 +98,20 @@ public class AdminController {
     @GetMapping("/reportes")
     public String verReportes(Model model, @RequestParam(value = "mes", required = false) String mesParam)
             throws com.fasterxml.jackson.core.JsonProcessingException {
+        // Recupera todas las boletas para construir las métricas del dashboard
         java.util.List<Boleta> todasLasBoletas = boletaService.listarTodas();
 
         double ingresos = 0;
         java.util.Map<String, Double> ventasPorMes = new java.util.TreeMap<>();
         java.util.Map<String, Integer> pedidosPorMes = new java.util.TreeMap<>();
 
+        // Acumula ingresos y agrupa ventas/pedidos por YearMonth
         for (Boleta b : todasLasBoletas) {
             ingresos += b.getTotal();
 
             if (b.getFecha_emision() != null) {
                 java.time.YearMonth ym = java.time.YearMonth.from(b.getFecha_emision());
+
                 String clave = ym.toString();
                 ventasPorMes.merge(clave, b.getTotal(), Double::sum);
                 pedidosPorMes.merge(clave, 1, Integer::sum);
@@ -117,12 +120,14 @@ public class AdminController {
 
         model.addAttribute("ingresosGenerados", String.format("%.2f", ingresos));
 
+        // Genera la lista de meses disponibles para la vista (dropdown de filtros)
         java.util.List<String> mesesDisponibles = new java.util.ArrayList<>(ventasPorMes.keySet());
         java.util.Collections.sort(mesesDisponibles);
         model.addAttribute("mesesDisponibles", mesesDisponibles);
 
         java.time.YearMonth selectedMes = null;
         if (mesParam != null && !mesParam.isBlank()) {
+
             try {
                 selectedMes = java.time.YearMonth.parse(mesParam);
             } catch (Exception ignored) {
@@ -141,6 +146,7 @@ public class AdminController {
             model.addAttribute("pedidosMes", 0);
         }
 
+        // Calcula el promedio mensual de pedidos para mostrar la métrica global
         double promedioPedidos = 0;
         if (!pedidosPorMes.isEmpty()) {
             int totalPedidos = 0;
@@ -151,10 +157,12 @@ public class AdminController {
         }
         model.addAttribute("promedioPedidosMensuales", String.format("%.1f", promedioPedidos));
 
+        // Serializa datos agregados para que la vista los consuma como gráficos
         com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
         model.addAttribute("ventasPorMesJson", mapper.writeValueAsString(ventasPorMes));
         model.addAttribute("pedidosPorMesJson", mapper.writeValueAsString(pedidosPorMes));
 
+        // Construye ranking de clientes con más compras registradas
         java.util.Map<String, Integer> comprasPorCliente = new java.util.HashMap<>();
         for (Boleta b : todasLasBoletas) {
             if (b.getUsuario_correo() != null && !b.getUsuario_correo().isEmpty()) {
@@ -162,12 +170,14 @@ public class AdminController {
             }
         }
 
-        java.util.Map<String, Integer> topClientes = comprasPorCliente.entrySet().stream()
-                .sorted(java.util.Map.Entry.<String, Integer>comparingByValue().reversed())
-                .limit(5)
-                .collect(java.util.LinkedHashMap::new,
-                        (m, e) -> m.put(e.getKey(), e.getValue()),
-                        java.util.Map::putAll);
+        java.util.List<java.util.Map.Entry<String, Integer>> rankingClientes = new java.util.ArrayList<>(comprasPorCliente.entrySet());
+        rankingClientes.sort(java.util.Map.Entry.<String, Integer>comparingByValue().reversed());
+
+        java.util.Map<String, Integer> topClientes = new java.util.LinkedHashMap<>();
+        for (int i = 0; i < java.lang.Math.min(5, rankingClientes.size()); i++) {
+            java.util.Map.Entry<String, Integer> entry = rankingClientes.get(i);
+            topClientes.put(entry.getKey(), entry.getValue());
+        }
 
         model.addAttribute("topClientesJson", mapper.writeValueAsString(topClientes));
         return "adminreporte";
